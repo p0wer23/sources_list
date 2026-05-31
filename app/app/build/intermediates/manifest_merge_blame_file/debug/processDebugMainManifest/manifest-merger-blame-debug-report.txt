@@ -1,0 +1,174 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.example.sourceslist"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+7-->INJECTED
+8        android:minSdkVersion="34"
+8-->INJECTED
+9        android:targetSdkVersion="36" />
+9-->INJECTED
+10
+11    <permission
+11-->[androidx.core:core:1.18.0] /home/punith/.gradle/caches/9.5.1/transforms/eb5dd00a8e9414475664d4390363febd/transformed/core-1.18.0/AndroidManifest.xml:22:5-24:47
+12        android:name="com.example.sourceslist.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+12-->[androidx.core:core:1.18.0] /home/punith/.gradle/caches/9.5.1/transforms/eb5dd00a8e9414475664d4390363febd/transformed/core-1.18.0/AndroidManifest.xml:23:9-81
+13        android:protectionLevel="signature" />
+13-->[androidx.core:core:1.18.0] /home/punith/.gradle/caches/9.5.1/transforms/eb5dd00a8e9414475664d4390363febd/transformed/core-1.18.0/AndroidManifest.xml:24:9-44
+14
+15    <uses-permission android:name="com.example.sourceslist.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+15-->[androidx.core:core:1.18.0] /home/punith/.gradle/caches/9.5.1/transforms/eb5dd00a8e9414475664d4390363febd/transformed/core-1.18.0/AndroidManifest.xml:26:5-97
+15-->[androidx.core:core:1.18.0] /home/punith/.gradle/caches/9.5.1/transforms/eb5dd00a8e9414475664d4390363febd/transformed/core-1.18.0/AndroidManifest.xml:26:22-94
+16
+17    <application
+17-->/home/punith/Desktop/android_apps/Sources_list/app/app/src/main/AndroidManifest.xml:4:5-24:19
+18        android:allowBackup="false"
+18-->/home/punith/Desktop/android_apps/Sources_list/app/app/src/main/AndroidManifest.xml:5:9-36
+19        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+19-->[androidx.core:core:1.18.0] /home/punith/.gradle/caches/9.5.1/transforms/eb5dd00a8e9414475664d4390363febd/transformed/core-1.18.0/AndroidManifest.xml:28:18-86
+20        android:dataExtractionRules="@xml/data_extraction_rules"
+20-->/home/punith/Desktop/android_apps/Sources_list/app/app/src/main/AndroidManifest.xml:6:9-65
+21        android:debuggable="true"
+22        android:extractNativeLibs="false"
+22-->INJECTED
+23        android:fullBackupContent="@xml/backup_rules"
+23-->/home/punith/Desktop/android_apps/Sources_list/app/app/src/main/AndroidManifest.xml:7:9-54
+24        android:icon="@mipmap/ic_launcher"
+24-->/home/punith/Desktop/android_apps/Sources_list/app/app/src/main/AndroidManifest.xml:8:9-43
+25        android:label="@string/app_name"
+25-->/home/punith/Desktop/android_apps/Sources_list/app/app/src/main/AndroidManifest.xml:9:9-41
+26        android:roundIcon="@mipmap/ic_launcher_round"
+26-->/home/punith/Desktop/android_apps/Sources_list/app/app/src/main/AndroidManifest.xml:10:9-54
+27        android:supportsRtl="true"
+27-->/home/punith/Desktop/android_apps/Sources_list/app/app/src/main/AndroidManifest.xml:11:9-35
+28        android:theme="@style/Theme.SourcesList" >
+28-->/home/punith/Desktop/android_apps/Sources_list/app/app/src/main/AndroidManifest.xml:12:9-49
+29        <activity
+29-->/home/punith/Desktop/android_apps/Sources_list/app/app/src/main/AndroidManifest.xml:13:9-23:20
+30            android:name="com.example.sourceslist.MainActivity"
+30-->/home/punith/Desktop/android_apps/Sources_list/app/app/src/main/AndroidManifest.xml:14:13-41
+31            android:exported="true"
+31-->/home/punith/Desktop/android_apps/Sources_list/app/app/src/main/AndroidManifest.xml:15:13-36
+32            android:label="@string/app_name"
+32-->/home/punith/Desktop/android_apps/Sources_list/app/app/src/main/AndroidManifest.xml:16:13-45
+33            android:theme="@style/Theme.SourcesList" >
+33-->/home/punith/Desktop/android_apps/Sources_list/app/app/src/main/AndroidManifest.xml:17:13-53
+34            <intent-filter>
+34-->/home/punith/Desktop/android_apps/Sources_list/app/app/src/main/AndroidManifest.xml:18:13-22:29
+35                <action android:name="android.intent.action.MAIN" />
+35-->/home/punith/Desktop/android_apps/Sources_list/app/app/src/main/AndroidManifest.xml:19:17-69
+35-->/home/punith/Desktop/android_apps/Sources_list/app/app/src/main/AndroidManifest.xml:19:25-66
+36
+37                <category android:name="android.intent.category.LAUNCHER" />
+37-->/home/punith/Desktop/android_apps/Sources_list/app/app/src/main/AndroidManifest.xml:21:17-77
+37-->/home/punith/Desktop/android_apps/Sources_list/app/app/src/main/AndroidManifest.xml:21:27-74
+38            </intent-filter>
+39        </activity>
+40        <activity
+40-->[androidx.compose.ui:ui-tooling-android:1.11.2] /home/punith/.gradle/caches/9.5.1/transforms/9e3363f7a0e65070e4246c7a8d359b7a/transformed/ui-tooling/AndroidManifest.xml:23:9-25:39
+41            android:name="androidx.compose.ui.tooling.PreviewActivity"
+41-->[androidx.compose.ui:ui-tooling-android:1.11.2] /home/punith/.gradle/caches/9.5.1/transforms/9e3363f7a0e65070e4246c7a8d359b7a/transformed/ui-tooling/AndroidManifest.xml:24:13-71
+42            android:exported="true" />
+42-->[androidx.compose.ui:ui-tooling-android:1.11.2] /home/punith/.gradle/caches/9.5.1/transforms/9e3363f7a0e65070e4246c7a8d359b7a/transformed/ui-tooling/AndroidManifest.xml:25:13-36
+43
+44        <provider
+44-->[androidx.emoji2:emoji2:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/4abeaa27b88fab34e518293a23fb86ff/transformed/emoji2-1.4.0/AndroidManifest.xml:24:9-32:20
+45            android:name="androidx.startup.InitializationProvider"
+45-->[androidx.emoji2:emoji2:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/4abeaa27b88fab34e518293a23fb86ff/transformed/emoji2-1.4.0/AndroidManifest.xml:25:13-67
+46            android:authorities="com.example.sourceslist.androidx-startup"
+46-->[androidx.emoji2:emoji2:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/4abeaa27b88fab34e518293a23fb86ff/transformed/emoji2-1.4.0/AndroidManifest.xml:26:13-68
+47            android:exported="false" >
+47-->[androidx.emoji2:emoji2:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/4abeaa27b88fab34e518293a23fb86ff/transformed/emoji2-1.4.0/AndroidManifest.xml:27:13-37
+48            <meta-data
+48-->[androidx.emoji2:emoji2:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/4abeaa27b88fab34e518293a23fb86ff/transformed/emoji2-1.4.0/AndroidManifest.xml:29:13-31:52
+49                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+49-->[androidx.emoji2:emoji2:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/4abeaa27b88fab34e518293a23fb86ff/transformed/emoji2-1.4.0/AndroidManifest.xml:30:17-75
+50                android:value="androidx.startup" />
+50-->[androidx.emoji2:emoji2:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/4abeaa27b88fab34e518293a23fb86ff/transformed/emoji2-1.4.0/AndroidManifest.xml:31:17-49
+51            <meta-data
+51-->[androidx.lifecycle:lifecycle-process:2.10.0] /home/punith/.gradle/caches/9.5.1/transforms/6cde016ed275cd6f49264fdf9c8d2c06/transformed/lifecycle-process-2.10.0/AndroidManifest.xml:29:13-31:52
+52                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+52-->[androidx.lifecycle:lifecycle-process:2.10.0] /home/punith/.gradle/caches/9.5.1/transforms/6cde016ed275cd6f49264fdf9c8d2c06/transformed/lifecycle-process-2.10.0/AndroidManifest.xml:30:17-78
+53                android:value="androidx.startup" />
+53-->[androidx.lifecycle:lifecycle-process:2.10.0] /home/punith/.gradle/caches/9.5.1/transforms/6cde016ed275cd6f49264fdf9c8d2c06/transformed/lifecycle-process-2.10.0/AndroidManifest.xml:31:17-49
+54            <meta-data
+54-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/d2d6022a719f5a5fae63d565c490b44d/transformed/profileinstaller-1.4.0/AndroidManifest.xml:29:13-31:52
+55                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+55-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/d2d6022a719f5a5fae63d565c490b44d/transformed/profileinstaller-1.4.0/AndroidManifest.xml:30:17-85
+56                android:value="androidx.startup" />
+56-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/d2d6022a719f5a5fae63d565c490b44d/transformed/profileinstaller-1.4.0/AndroidManifest.xml:31:17-49
+57        </provider>
+58
+59        <uses-library
+59-->[androidx.window:window:1.5.0] /home/punith/.gradle/caches/9.5.1/transforms/a53bc8092e7b8d495062e666bc8980b0/transformed/window-1.5.0/AndroidManifest.xml:23:9-25:40
+60            android:name="androidx.window.extensions"
+60-->[androidx.window:window:1.5.0] /home/punith/.gradle/caches/9.5.1/transforms/a53bc8092e7b8d495062e666bc8980b0/transformed/window-1.5.0/AndroidManifest.xml:24:13-54
+61            android:required="false" />
+61-->[androidx.window:window:1.5.0] /home/punith/.gradle/caches/9.5.1/transforms/a53bc8092e7b8d495062e666bc8980b0/transformed/window-1.5.0/AndroidManifest.xml:25:13-37
+62        <uses-library
+62-->[androidx.window:window:1.5.0] /home/punith/.gradle/caches/9.5.1/transforms/a53bc8092e7b8d495062e666bc8980b0/transformed/window-1.5.0/AndroidManifest.xml:26:9-28:40
+63            android:name="androidx.window.sidecar"
+63-->[androidx.window:window:1.5.0] /home/punith/.gradle/caches/9.5.1/transforms/a53bc8092e7b8d495062e666bc8980b0/transformed/window-1.5.0/AndroidManifest.xml:27:13-51
+64            android:required="false" />
+64-->[androidx.window:window:1.5.0] /home/punith/.gradle/caches/9.5.1/transforms/a53bc8092e7b8d495062e666bc8980b0/transformed/window-1.5.0/AndroidManifest.xml:28:13-37
+65
+66        <activity
+66-->[androidx.compose.ui:ui-test-manifest:1.11.2] /home/punith/.gradle/caches/9.5.1/transforms/13dad63f169305448b34b90f54bae8c6/transformed/ui-test-manifest-1.11.2/AndroidManifest.xml:23:9-26:79
+67            android:name="androidx.activity.ComponentActivity"
+67-->[androidx.compose.ui:ui-test-manifest:1.11.2] /home/punith/.gradle/caches/9.5.1/transforms/13dad63f169305448b34b90f54bae8c6/transformed/ui-test-manifest-1.11.2/AndroidManifest.xml:24:13-63
+68            android:exported="true"
+68-->[androidx.compose.ui:ui-test-manifest:1.11.2] /home/punith/.gradle/caches/9.5.1/transforms/13dad63f169305448b34b90f54bae8c6/transformed/ui-test-manifest-1.11.2/AndroidManifest.xml:25:13-36
+69            android:theme="@android:style/Theme.Material.Light.NoActionBar" />
+69-->[androidx.compose.ui:ui-test-manifest:1.11.2] /home/punith/.gradle/caches/9.5.1/transforms/13dad63f169305448b34b90f54bae8c6/transformed/ui-test-manifest-1.11.2/AndroidManifest.xml:26:13-76
+70
+71        <service
+71-->[androidx.room:room-runtime-android:2.8.4] /home/punith/.gradle/caches/9.5.1/transforms/4fcefaf7c2bc028f61db02b0ecd4d586/transformed/room-runtime/AndroidManifest.xml:24:9-28:63
+72            android:name="androidx.room.MultiInstanceInvalidationService"
+72-->[androidx.room:room-runtime-android:2.8.4] /home/punith/.gradle/caches/9.5.1/transforms/4fcefaf7c2bc028f61db02b0ecd4d586/transformed/room-runtime/AndroidManifest.xml:25:13-74
+73            android:directBootAware="true"
+73-->[androidx.room:room-runtime-android:2.8.4] /home/punith/.gradle/caches/9.5.1/transforms/4fcefaf7c2bc028f61db02b0ecd4d586/transformed/room-runtime/AndroidManifest.xml:26:13-43
+74            android:exported="false" />
+74-->[androidx.room:room-runtime-android:2.8.4] /home/punith/.gradle/caches/9.5.1/transforms/4fcefaf7c2bc028f61db02b0ecd4d586/transformed/room-runtime/AndroidManifest.xml:27:13-37
+75
+76        <receiver
+76-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/d2d6022a719f5a5fae63d565c490b44d/transformed/profileinstaller-1.4.0/AndroidManifest.xml:34:9-52:20
+77            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+77-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/d2d6022a719f5a5fae63d565c490b44d/transformed/profileinstaller-1.4.0/AndroidManifest.xml:35:13-76
+78            android:directBootAware="false"
+78-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/d2d6022a719f5a5fae63d565c490b44d/transformed/profileinstaller-1.4.0/AndroidManifest.xml:36:13-44
+79            android:enabled="true"
+79-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/d2d6022a719f5a5fae63d565c490b44d/transformed/profileinstaller-1.4.0/AndroidManifest.xml:37:13-35
+80            android:exported="true"
+80-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/d2d6022a719f5a5fae63d565c490b44d/transformed/profileinstaller-1.4.0/AndroidManifest.xml:38:13-36
+81            android:permission="android.permission.DUMP" >
+81-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/d2d6022a719f5a5fae63d565c490b44d/transformed/profileinstaller-1.4.0/AndroidManifest.xml:39:13-57
+82            <intent-filter>
+82-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/d2d6022a719f5a5fae63d565c490b44d/transformed/profileinstaller-1.4.0/AndroidManifest.xml:40:13-42:29
+83                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+83-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/d2d6022a719f5a5fae63d565c490b44d/transformed/profileinstaller-1.4.0/AndroidManifest.xml:41:17-91
+83-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/d2d6022a719f5a5fae63d565c490b44d/transformed/profileinstaller-1.4.0/AndroidManifest.xml:41:25-88
+84            </intent-filter>
+85            <intent-filter>
+85-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/d2d6022a719f5a5fae63d565c490b44d/transformed/profileinstaller-1.4.0/AndroidManifest.xml:43:13-45:29
+86                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+86-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/d2d6022a719f5a5fae63d565c490b44d/transformed/profileinstaller-1.4.0/AndroidManifest.xml:44:17-85
+86-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/d2d6022a719f5a5fae63d565c490b44d/transformed/profileinstaller-1.4.0/AndroidManifest.xml:44:25-82
+87            </intent-filter>
+88            <intent-filter>
+88-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/d2d6022a719f5a5fae63d565c490b44d/transformed/profileinstaller-1.4.0/AndroidManifest.xml:46:13-48:29
+89                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+89-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/d2d6022a719f5a5fae63d565c490b44d/transformed/profileinstaller-1.4.0/AndroidManifest.xml:47:17-88
+89-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/d2d6022a719f5a5fae63d565c490b44d/transformed/profileinstaller-1.4.0/AndroidManifest.xml:47:25-85
+90            </intent-filter>
+91            <intent-filter>
+91-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/d2d6022a719f5a5fae63d565c490b44d/transformed/profileinstaller-1.4.0/AndroidManifest.xml:49:13-51:29
+92                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+92-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/d2d6022a719f5a5fae63d565c490b44d/transformed/profileinstaller-1.4.0/AndroidManifest.xml:50:17-95
+92-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/punith/.gradle/caches/9.5.1/transforms/d2d6022a719f5a5fae63d565c490b44d/transformed/profileinstaller-1.4.0/AndroidManifest.xml:50:25-92
+93            </intent-filter>
+94        </receiver>
+95    </application>
+96
+97</manifest>

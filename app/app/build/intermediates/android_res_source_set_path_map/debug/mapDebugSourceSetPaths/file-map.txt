@@ -1,0 +1,8 @@
+com.example.sourceslist.app-pngs-0 /home/punith/Desktop/android_apps/Sources_list/app/app/build/generated/res/pngs/debug
+com.example.sourceslist.app-updated_navigation_xml-1 /home/punith/Desktop/android_apps/Sources_list/app/app/build/generated/updated_navigation_xml/debug
+com.example.sourceslist.app-packageDebugResources-2 /home/punith/Desktop/android_apps/Sources_list/app/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.example.sourceslist.app-packageDebugResources-3 /home/punith/Desktop/android_apps/Sources_list/app/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.example.sourceslist.app-debug-4 /home/punith/Desktop/android_apps/Sources_list/app/app/build/intermediates/merged_res/debug/mergeDebugResources
+com.example.sourceslist.app-debug-5 /home/punith/Desktop/android_apps/Sources_list/app/app/src/debug/res
+com.example.sourceslist.app-main-6 /home/punith/Desktop/android_apps/Sources_list/app/app/src/main/res
+gradleHome-0 /home/punith/.gradle

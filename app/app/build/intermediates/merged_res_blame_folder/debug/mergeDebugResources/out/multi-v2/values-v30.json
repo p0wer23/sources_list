@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.example.sourceslist.app-mergeDebugResources-41:/values-v30/values-v30.xml",
+            "map": [
+                {
+                    "source": "/home/punith/.gradle/caches/9.5.1/transforms/137592c8870d476644853fe9061f6e63/transformed/material3/res/values-v30/values-v30.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "72",
+                        "endOffsets": "123"
+                    }
+                }
+            ]
+        }
+    ]
+}
