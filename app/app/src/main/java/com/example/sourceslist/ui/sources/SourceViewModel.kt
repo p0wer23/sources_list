@@ -73,6 +73,8 @@ class SourceViewModel(private val repository: SourceRepository) : ViewModel() {
     }
 
     fun moveSource(source: SourceEntity, bracket: BracketType) {
+        if (source.isDone) return
+
         viewModelScope.launch {
             repository.moveSource(source, bracket)
         }

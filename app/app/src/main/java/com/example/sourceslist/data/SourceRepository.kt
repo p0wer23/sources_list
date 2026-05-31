@@ -28,10 +28,11 @@ class SourceRepository(private val sourceDao: SourceDao) {
     }
 
     suspend fun moveSource(source: SourceEntity, bracket: BracketType) {
+        if (source.isDone) return
+
         sourceDao.update(
             source.copy(
                 bracket = bracket,
-                isDone = false,
                 updatedAt = System.currentTimeMillis()
             )
         )

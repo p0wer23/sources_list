@@ -1,6 +1,7 @@
 package com.example.sourceslist.ui.sources
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,25 +13,24 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.OpenInBrowser
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedAssistChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -107,9 +107,11 @@ private fun SourceItem(
     onDelete: (SourceEntity) -> Unit
 ) {
     val context = LocalContext.current
-    var expanded by remember { mutableStateOf(false) }
-    var confirmDelete by remember { mutableStateOf(false) }
+    var actionsExpanded by rememberSaveable(source.sourceId) { mutableStateOf(false) }
+    var confirmDelete by rememberSaveable(source.sourceId) { mutableStateOf(false) }
     val displayTitle = source.title?.takeIf { it.isNotBlank() } ?: source.url
+    val canMove = !source.isDone
+    val moveTargets = BracketType.entries.filter { it != source.bracket }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -147,51 +149,77 @@ private fun SourceItem(
                         )
                     }
                 }
-                IconButton(onClick = { expanded = true }) {
-                    Icon(Icons.Default.MoreVert, contentDescription = "More actions")
+                TextButton(onClick = { actionsExpanded = !actionsExpanded }) {
+                    Text(if (actionsExpanded) "Close" else "Actions")
+                    Icon(
+                        imageVector = if (actionsExpanded) {
+                            Icons.Default.ExpandLess
+                        } else {
+                            Icons.Default.ExpandMore
+                        },
+                        contentDescription = null
+                    )
                 }
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    BracketType.entries
-                        .filter { it != source.bracket }
-                        .forEach { bracket ->
-                            DropdownMenuItem(
-                                text = { Text("Move to ${bracket.label}") },
-                                onClick = {
-                                    expanded = false
-                                    onMove(source, bracket)
+            }
+
+            if (actionsExpanded) {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    if (canMove && moveTargets.isNotEmpty()) {
+                        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            Text(
+                                text = "Move to",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            FlowRow(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                moveTargets.forEach { bracket ->
+                                    AssistChip(
+                                        onClick = {
+                                            actionsExpanded = false
+                                            onMove(source, bracket)
+                                        },
+                                        label = { Text(bracket.label) }
+                                    )
                                 }
+                            }
+                        }
+                    }
+
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        if (!showCompleted && source.bracket != BracketType.UNCLASSIFIED) {
+                            ElevatedAssistChip(
+                                onClick = {
+                                    actionsExpanded = false
+                                    onDone(source)
+                                },
+                                label = { Text("Mark done") },
+                                leadingIcon = { Icon(Icons.Default.Check, contentDescription = null) }
                             )
                         }
-                    if (!showCompleted && source.bracket != BracketType.UNCLASSIFIED) {
-                        DropdownMenuItem(
-                            text = { Text("Mark done") },
-                            leadingIcon = { Icon(Icons.Default.Check, contentDescription = null) },
-                            onClick = {
-                                expanded = false
-                                onDone(source)
-                            }
-                        )
-                    }
-                    if (showCompleted) {
-                        DropdownMenuItem(
-                            text = { Text("Restore") },
-                            onClick = {
-                                expanded = false
-                                onRestore(source)
-                            }
-                        )
-                    }
-                    DropdownMenuItem(
-                        text = { Text("Delete") },
-                        leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null) },
-                        onClick = {
-                            expanded = false
-                            confirmDelete = true
+                        if (showCompleted) {
+                            AssistChip(
+                                onClick = {
+                                    actionsExpanded = false
+                                    onRestore(source)
+                                },
+                                label = { Text("Restore") }
+                            )
                         }
-                    )
+                        AssistChip(
+                            onClick = {
+                                actionsExpanded = false
+                                confirmDelete = true
+                            },
+                            label = { Text("Delete") },
+                            leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null) }
+                        )
+                    }
                 }
             }
 
