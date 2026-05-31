@@ -15,7 +15,7 @@ interface SourceDao {
         """
         SELECT * FROM sources
         WHERE bracket = :bracket AND isDone = 0
-        ORDER BY updatedAt DESC
+        ORDER BY createdAt ASC
         """
     )
     fun activeSourcesByBracket(bracket: BracketType): Flow<List<SourceEntity>>
@@ -24,7 +24,7 @@ interface SourceDao {
         """
         SELECT * FROM sources
         WHERE bracket = :bracket AND isDone = 1
-        ORDER BY updatedAt DESC
+        ORDER BY createdAt ASC
         """
     )
     fun completedSourcesByBracket(bracket: BracketType): Flow<List<SourceEntity>>

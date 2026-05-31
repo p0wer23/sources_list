@@ -1,5 +1,12 @@
 package com.example.sourceslist.ui.sources
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -68,6 +75,34 @@ private val homeSelectors = listOf(
     )
 )
 
+private val forwardEnterTransition: EnterTransition =
+    fadeIn(animationSpec = tween(durationMillis = 140)) +
+        slideInHorizontally(
+            animationSpec = tween(durationMillis = 180),
+            initialOffsetX = { it / 8 }
+        )
+
+private val forwardExitTransition: ExitTransition =
+    fadeOut(animationSpec = tween(durationMillis = 120)) +
+        slideOutHorizontally(
+            animationSpec = tween(durationMillis = 160),
+            targetOffsetX = { -it / 12 }
+        )
+
+private val backEnterTransition: EnterTransition =
+    fadeIn(animationSpec = tween(durationMillis = 140)) +
+        slideInHorizontally(
+            animationSpec = tween(durationMillis = 180),
+            initialOffsetX = { -it / 8 }
+        )
+
+private val backExitTransition: ExitTransition =
+    fadeOut(animationSpec = tween(durationMillis = 120)) +
+        slideOutHorizontally(
+            animationSpec = tween(durationMillis = 160),
+            targetOffsetX = { it / 12 }
+        )
+
 @Composable
 fun SourcesApp(viewModel: SourceViewModel) {
     val navController = rememberNavController()
@@ -78,7 +113,13 @@ fun SourcesApp(viewModel: SourceViewModel) {
         navController = navController,
         startDestination = SourcesRoute.HOME
     ) {
-        composable(SourcesRoute.HOME) {
+        composable(
+            route = SourcesRoute.HOME,
+            enterTransition = { backEnterTransition },
+            exitTransition = { forwardExitTransition },
+            popEnterTransition = { backEnterTransition },
+            popExitTransition = { backExitTransition }
+        ) {
             HomeScreen(
                 onAddSource = { navController.navigate(SourcesRoute.ADD) },
                 onOpenBracket = { bracket ->
@@ -86,7 +127,13 @@ fun SourcesApp(viewModel: SourceViewModel) {
                 }
             )
         }
-        composable(SourcesRoute.ADD) {
+        composable(
+            route = SourcesRoute.ADD,
+            enterTransition = { forwardEnterTransition },
+            exitTransition = { forwardExitTransition },
+            popEnterTransition = { backEnterTransition },
+            popExitTransition = { backExitTransition }
+        ) {
             AddSourceScreen(
                 onBack = {
                     viewModel.resetAddSourceState()
@@ -112,7 +159,11 @@ fun SourcesApp(viewModel: SourceViewModel) {
         }
         composable(
             route = SourcesRoute.BRACKET,
-            arguments = listOf(navArgument("bracket") { type = NavType.StringType })
+            arguments = listOf(navArgument("bracket") { type = NavType.StringType }),
+            enterTransition = { forwardEnterTransition },
+            exitTransition = { forwardExitTransition },
+            popEnterTransition = { backEnterTransition },
+            popExitTransition = { backExitTransition }
         ) { backStackEntry ->
             val bracketName = backStackEntry.arguments?.getString("bracket")
             val bracket = BracketType.entries.firstOrNull { it.name == bracketName }
@@ -154,16 +205,6 @@ private fun HomeScreen(
                 .padding(horizontal = 16.dp, vertical = 20.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            Text(
-                text = "Choose a bracket",
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = "Home only routes you to the right list. URLs stay inside each bracket page.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(4.dp))
             homeSelectors.forEach { selector ->
                 BracketSelectorCard(
                     bracket = selector.bracket,

@@ -106,7 +106,7 @@ public class SourceDao_Impl(
         |
         |        SELECT * FROM sources
         |        WHERE bracket = ? AND isDone = 0
-        |        ORDER BY updatedAt DESC
+        |        ORDER BY createdAt ASC
         |        
         """.trimMargin()
     return createFlow(__db, false, arrayOf("sources")) { _connection ->
@@ -162,7 +162,7 @@ public class SourceDao_Impl(
         |
         |        SELECT * FROM sources
         |        WHERE bracket = ? AND isDone = 1
-        |        ORDER BY updatedAt DESC
+        |        ORDER BY createdAt ASC
         |        
         """.trimMargin()
     return createFlow(__db, false, arrayOf("sources")) { _connection ->
