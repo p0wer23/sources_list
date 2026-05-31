@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,7 +23,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -74,6 +72,7 @@ private val homeSelectors = listOf(
 fun SourcesApp(viewModel: SourceViewModel) {
     val navController = rememberNavController()
     val pendingDuplicate by viewModel.pendingDuplicate.collectAsState()
+    val urlError by viewModel.urlError.collectAsState()
 
     NavHost(
         navController = navController,
@@ -89,11 +88,26 @@ fun SourcesApp(viewModel: SourceViewModel) {
         }
         composable(SourcesRoute.ADD) {
             AddSourceScreen(
-                onBack = { navController.popBackStack() },
-                onSave = { url, title ->
-                    viewModel.addSource(url = url, title = title)
+                onBack = {
+                    viewModel.resetAddSourceState()
                     navController.popBackStack()
-                }
+                },
+                urlError = urlError,
+                pendingDuplicate = pendingDuplicate,
+                onUrlChanged = viewModel::clearUrlError,
+                onSave = { url, title ->
+                    viewModel.addSource(
+                        url = url,
+                        title = title,
+                        onAdded = { navController.popBackStack() }
+                    )
+                },
+                onConfirmDuplicate = {
+                    viewModel.addDuplicateAnyway(
+                        onAdded = { navController.popBackStack() }
+                    )
+                },
+                onDismissDuplicate = viewModel::dismissDuplicateWarning
             )
         }
         composable(
@@ -112,23 +126,6 @@ fun SourcesApp(viewModel: SourceViewModel) {
         }
     }
 
-    pendingDuplicate?.let {
-        AlertDialog(
-            onDismissRequest = viewModel::dismissDuplicateWarning,
-            title = { Text("Duplicate link") },
-            text = { Text("This URL is already saved. Add it again?") },
-            confirmButton = {
-                TextButton(onClick = viewModel::addDuplicateAnyway) {
-                    Text("Add")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = viewModel::dismissDuplicateWarning) {
-                    Text("Cancel")
-                }
-            }
-        )
-    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

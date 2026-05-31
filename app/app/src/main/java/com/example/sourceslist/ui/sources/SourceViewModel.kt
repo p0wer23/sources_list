@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.sourceslist.data.SourceRepository
 import com.example.sourceslist.data.entity.BracketType
 import com.example.sourceslist.data.entity.SourceEntity
+import java.net.URI
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,6 +21,8 @@ data class PendingDuplicate(
 class SourceViewModel(private val repository: SourceRepository) : ViewModel() {
     private val _pendingDuplicate = MutableStateFlow<PendingDuplicate?>(null)
     val pendingDuplicate: StateFlow<PendingDuplicate?> = _pendingDuplicate.asStateFlow()
+    private val _urlError = MutableStateFlow<String?>(null)
+    val urlError: StateFlow<String?> = _urlError.asStateFlow()
 
     fun activeSources(bracket: BracketType): Flow<List<SourceEntity>> =
         repository.activeSources(bracket)
@@ -27,28 +30,45 @@ class SourceViewModel(private val repository: SourceRepository) : ViewModel() {
     fun completedSources(bracket: BracketType): Flow<List<SourceEntity>> =
         repository.completedSources(bracket)
 
-    fun addSource(url: String, title: String?) {
+    fun addSource(url: String, title: String?, onAdded: () -> Unit = {}) {
         val trimmedUrl = url.trim()
-        if (trimmedUrl.isBlank()) return
+        val validationError = validateUrl(trimmedUrl)
+        if (validationError != null) {
+            _urlError.value = validationError
+            return
+        }
+
+        _urlError.value = null
 
         viewModelScope.launch {
             if (repository.isDuplicate(trimmedUrl)) {
                 _pendingDuplicate.value = PendingDuplicate(trimmedUrl, title)
             } else {
                 repository.addSource(trimmedUrl, title)
+                onAdded()
             }
         }
     }
 
-    fun addDuplicateAnyway() {
+    fun addDuplicateAnyway(onAdded: () -> Unit = {}) {
         val duplicate = _pendingDuplicate.value ?: return
         _pendingDuplicate.value = null
         viewModelScope.launch {
             repository.addSource(duplicate.url, duplicate.title)
+            onAdded()
         }
     }
 
     fun dismissDuplicateWarning() {
+        _pendingDuplicate.value = null
+    }
+
+    fun clearUrlError() {
+        _urlError.value = null
+    }
+
+    fun resetAddSourceState() {
+        _urlError.value = null
         _pendingDuplicate.value = null
     }
 
@@ -73,6 +93,19 @@ class SourceViewModel(private val repository: SourceRepository) : ViewModel() {
     fun delete(source: SourceEntity) {
         viewModelScope.launch {
             repository.delete(source)
+        }
+    }
+
+    private fun validateUrl(url: String): String? {
+        if (url.isBlank()) return "Enter a URL."
+
+        val uri = runCatching { URI(url) }.getOrNull()
+        val scheme = uri?.scheme?.lowercase()
+        val host = uri?.host
+        return if (scheme in setOf("http", "https") && !host.isNullOrBlank()) {
+            null
+        } else {
+            "Enter a valid http:// or https:// URL."
         }
     }
 }

@@ -23,7 +23,8 @@ Current UI flow:
 
 V1 behavior:
 - new URLs save into `Unclassified`
+- add screen validates blank/invalid URLs inline
 - bracket pages allow open, copy, move, delete
 - `Casual` and `Serious` allow mark-done and restore
-- duplicate URL save should warn before adding again
+- duplicate URL save should warn before adding again and keep add-screen context until confirmed or canceled
 - all data stays local in Room

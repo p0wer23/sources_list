@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -15,6 +16,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,7 +31,12 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun AddSourceScreen(
     onBack: () -> Unit,
-    onSave: (url: String, title: String?) -> Unit
+    urlError: String?,
+    pendingDuplicate: PendingDuplicate?,
+    onUrlChanged: () -> Unit,
+    onSave: (url: String, title: String?) -> Unit,
+    onConfirmDuplicate: () -> Unit,
+    onDismissDuplicate: () -> Unit
 ) {
     var url by remember { mutableStateOf("") }
     var title by remember { mutableStateOf("") }
@@ -55,10 +62,21 @@ fun AddSourceScreen(
         ) {
             OutlinedTextField(
                 value = url,
-                onValueChange = { url = it },
+                onValueChange = {
+                    url = it
+                    if (urlError != null) {
+                        onUrlChanged()
+                    }
+                },
                 label = { Text("URL") },
                 singleLine = true,
+                isError = urlError != null,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
+                supportingText = {
+                    if (urlError != null) {
+                        Text(urlError)
+                    }
+                },
                 modifier = Modifier.fillMaxWidth()
             )
             OutlinedTextField(
@@ -70,11 +88,28 @@ fun AddSourceScreen(
             )
             Button(
                 onClick = { onSave(url, title) },
-                enabled = url.isNotBlank(),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Save to Unclassified")
             }
         }
+    }
+
+    if (pendingDuplicate != null) {
+        AlertDialog(
+            onDismissRequest = onDismissDuplicate,
+            title = { Text("Duplicate link") },
+            text = { Text("This URL is already saved. Add it again?") },
+            confirmButton = {
+                TextButton(onClick = onConfirmDuplicate) {
+                    Text("Add")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismissDuplicate) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }
