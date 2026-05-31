@@ -1,33 +1,27 @@
 package com.example.sourceslist.ui.sources
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.OpenInBrowser
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -36,128 +30,85 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.sourceslist.data.entity.BracketType
-import com.example.sourceslist.data.entity.SourceEntity
-import com.example.sourceslist.ui.common.copyLink
-import com.example.sourceslist.ui.common.openLink
 
-private data class SourceFilter(
-    val label: String,
+private data class HomeBracketSelector(
     val bracket: BracketType,
-    val completed: Boolean = false
+    val description: String
 )
 
-private val filters = listOf(
-    SourceFilter("Inbox", BracketType.UNCLASSIFIED),
-    SourceFilter("Casual", BracketType.CASUAL),
-    SourceFilter("Serious", BracketType.SERIOUS),
-    SourceFilter("Done C", BracketType.CASUAL, completed = true),
-    SourceFilter("Done S", BracketType.SERIOUS, completed = true)
+private object SourcesRoute {
+    const val HOME = "home"
+    const val ADD = "add"
+    const val BRACKET = "bracket/{bracket}"
+
+    fun bracket(bracket: BracketType): String = "bracket/${bracket.name}"
+}
+
+private val homeSelectors = listOf(
+    HomeBracketSelector(
+        bracket = BracketType.UNCLASSIFIED,
+        description = "New links waiting for a decision."
+    ),
+    HomeBracketSelector(
+        bracket = BracketType.CASUAL,
+        description = "Things you can read or watch whenever."
+    ),
+    HomeBracketSelector(
+        bracket = BracketType.SERIOUS,
+        description = "Items that need focused time."
+    )
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SourcesApp(viewModel: SourceViewModel) {
-    var selectedFilter by remember { mutableStateOf(filters.first()) }
-    var url by remember { mutableStateOf("") }
-    var title by remember { mutableStateOf("") }
+    val navController = rememberNavController()
     val pendingDuplicate by viewModel.pendingDuplicate.collectAsState()
-    val sources by if (selectedFilter.completed) {
-        viewModel.completedSources(selectedFilter.bracket).collectAsState(initial = emptyList())
-    } else {
-        viewModel.activeSources(selectedFilter.bracket).collectAsState(initial = emptyList())
-    }
 
-    Scaffold(
-        contentWindowInsets = WindowInsets(0.dp),
-        topBar = {
-            TopAppBar(title = { Text("Sources List") })
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            OutlinedTextField(
-                value = url,
-                onValueChange = { url = it },
-                label = { Text("URL") },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
-                modifier = Modifier.fillMaxWidth()
+    NavHost(
+        navController = navController,
+        startDestination = SourcesRoute.HOME
+    ) {
+        composable(SourcesRoute.HOME) {
+            HomeScreen(
+                onAddSource = { navController.navigate(SourcesRoute.ADD) },
+                onOpenBracket = { bracket ->
+                    navController.navigate(SourcesRoute.bracket(bracket))
+                }
             )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                OutlinedTextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    label = { Text("Title") },
-                    singleLine = true,
-                    modifier = Modifier.weight(1f)
-                )
-                Button(
-                    onClick = {
-                        viewModel.addSource(url, title)
-                        url = ""
-                        title = ""
-                        selectedFilter = filters.first()
-                    },
-                    enabled = url.isNotBlank()
-                ) {
-                    Text("Add")
+        }
+        composable(SourcesRoute.ADD) {
+            AddSourceScreen(
+                onBack = { navController.popBackStack() },
+                onSave = { url, title ->
+                    viewModel.addSource(url = url, title = title)
+                    navController.popBackStack()
                 }
-            }
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                itemsIndexed(filters) { _, filter ->
-                    FilterChip(
-                        selected = selectedFilter == filter,
-                        onClick = { selectedFilter = filter },
-                        label = { Text(filter.label) }
-                    )
-                }
-            }
+            )
+        }
+        composable(
+            route = SourcesRoute.BRACKET,
+            arguments = listOf(navArgument("bracket") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val bracketName = backStackEntry.arguments?.getString("bracket")
+            val bracket = BracketType.entries.firstOrNull { it.name == bracketName }
+                ?: BracketType.UNCLASSIFIED
 
-            if (sources.isEmpty()) {
-                Text(
-                    text = "No sources",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 24.dp)
-                )
-            } else {
-                LazyColumn(
-                    contentPadding = PaddingValues(bottom = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(sources, key = { it.sourceId }) { source ->
-                        MinimalSourceRow(
-                            source = source,
-                            completedView = selectedFilter.completed,
-                            onMove = viewModel::moveSource,
-                            onDone = viewModel::markDone,
-                            onRestore = viewModel::restore,
-                            onDelete = viewModel::delete
-                        )
-                    }
-                }
-            }
+            BracketScreen(
+                viewModel = viewModel,
+                bracket = bracket,
+                onBack = { navController.popBackStack() }
+            )
         }
     }
 
@@ -180,85 +131,154 @@ fun SourcesApp(viewModel: SourceViewModel) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MinimalSourceRow(
-    source: SourceEntity,
-    completedView: Boolean,
-    onMove: (SourceEntity, BracketType) -> Unit,
-    onDone: (SourceEntity) -> Unit,
-    onRestore: (SourceEntity) -> Unit,
-    onDelete: (SourceEntity) -> Unit
+private fun HomeScreen(
+    onAddSource: () -> Unit,
+    onOpenBracket: (BracketType) -> Unit
 ) {
-    val context = LocalContext.current
-    val displayTitle = source.title?.takeIf { it.isNotBlank() } ?: source.url
-
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Scaffold(
+        contentWindowInsets = WindowInsets(0.dp),
+        topBar = {
+            TopAppBar(
+                title = { Text("Sources List") },
+                actions = {
+                    IconButton(onClick = onAddSource) {
+                        Icon(Icons.Default.Add, contentDescription = "Add URL")
+                    }
+                }
+            )
+        }
+    ) { innerPadding ->
         Column(
-            modifier = Modifier.padding(10.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp, vertical = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             Text(
-                text = displayTitle,
-                style = MaterialTheme.typography.titleSmall,
-                textDecoration = if (source.isDone) TextDecoration.LineThrough else null,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
+                text = "Choose a bracket",
+                style = MaterialTheme.typography.titleMedium
             )
-            if (source.title?.isNotBlank() == true) {
-                Text(
-                    text = source.url,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+            Text(
+                text = "Home only routes you to the right list. URLs stay inside each bracket page.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            homeSelectors.forEach { selector ->
+                BracketSelectorCard(
+                    bracket = selector.bracket,
+                    description = selector.description,
+                    onClick = { onOpenBracket(selector.bracket) }
                 )
             }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically
+        }
+    }
+}
+
+@Composable
+private fun BracketSelectorCard(
+    bracket: BracketType,
+    description: String,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 18.dp, vertical = 20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                AssistChip(onClick = {}, label = { Text(source.bracket.label) })
-                IconButton(onClick = { openLink(context, source.url) }) {
-                    Icon(Icons.Default.OpenInBrowser, contentDescription = "Open")
-                }
-                IconButton(onClick = { copyLink(context, source.url) }) {
-                    Icon(Icons.Default.ContentCopy, contentDescription = "Copy")
-                }
-                if (source.bracket != BracketType.UNCLASSIFIED) {
-                    IconButton(onClick = { if (completedView) onRestore(source) else onDone(source) }) {
-                        Icon(Icons.Default.Check, contentDescription = if (completedView) "Restore" else "Done")
+                Text(
+                    text = bracket.label,
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Text(
+                text = ">",
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun BracketScreen(
+    viewModel: SourceViewModel,
+    bracket: BracketType,
+    onBack: () -> Unit
+) {
+    var showCompleted by rememberSaveable(bracket) { mutableStateOf(false) }
+    val supportsCompleted = bracket != BracketType.UNCLASSIFIED
+
+    Scaffold(
+        contentWindowInsets = WindowInsets(0.dp),
+        topBar = {
+            TopAppBar(
+                title = { Text(bracket.label) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Go back"
+                        )
                     }
                 }
-                IconButton(onClick = { onDelete(source) }) {
-                    Icon(Icons.Default.Delete, contentDescription = "Delete")
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            if (supportsCompleted) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    FilterChip(
+                        selected = !showCompleted,
+                        onClick = { showCompleted = false },
+                        label = { Text("Active") }
+                    )
+                    FilterChip(
+                        selected = showCompleted,
+                        onClick = { showCompleted = true },
+                        label = { Text("Completed") }
+                    )
                 }
             }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                if (source.bracket == BracketType.UNCLASSIFIED) {
-                    TextButton(onClick = { onMove(source, BracketType.CASUAL) }) {
-                        Text("Casual")
-                    }
-                    TextButton(onClick = { onMove(source, BracketType.SERIOUS) }) {
-                        Text("Serious")
-                    }
-                } else {
-                    TextButton(
-                        onClick = {
-                            val target = if (source.bracket == BracketType.CASUAL) {
-                                BracketType.SERIOUS
-                            } else {
-                                BracketType.CASUAL
-                            }
-                            onMove(source, target)
-                        }
-                    ) {
-                        Text(if (source.bracket == BracketType.CASUAL) "Serious" else "Casual")
-                    }
-                }
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                SourceListScreen(
+                    viewModel = viewModel,
+                    bracket = bracket,
+                    showCompleted = showCompleted
+                )
             }
         }
     }
