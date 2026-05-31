@@ -163,7 +163,7 @@ private fun SourceItem(
             }
 
             if (actionsExpanded) {
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     if (canMove && moveTargets.isNotEmpty()) {
                         FlowRow(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
