@@ -108,7 +108,13 @@ Allowed actions:
 - If no title is provided, the app should display the raw URL.
 
 ### 6.2 View Sources by Bracket
-- User must be able to see separate lists for `Unclassified`, `Casual`, and `Serious`.
+- User must land on a home screen that presents three selectors:
+  - `Unclassified`
+  - `Casual`
+  - `Serious`
+- Tapping a selector must navigate to a dedicated page for that bracket.
+- The home screen must not expand or preview the URLs inline under those selectors.
+- Each bracket page must show the list for that bracket only.
 - Each list item should clearly show enough information to identify the source.
 - The bracket of a source must be visually clear.
 
@@ -137,6 +143,8 @@ Allowed actions:
 ### 6.8 Done Item Handling
 - Done items from `Casual` must appear in a completed view scoped to `Casual`.
 - Done items from `Serious` must appear in a completed view scoped to `Serious`.
+- The `Casual` bracket page must provide an option to show only read URLs.
+- The `Serious` bracket page must provide an option to show only read URLs.
 - Active and completed items should not be mixed in the default list view.
 - Keep the data model simple by storing a boolean completion flag and bracket value.
 
@@ -146,6 +154,8 @@ Allowed actions:
 - Duplicate comparison should be based on the stored URL string in V1.
 
 ## 7. UX Requirements
+- The existing app name/header can remain as-is.
+- The home screen should expose a clear `+` action for adding a URL.
 - Saving a link should be quick and require few taps.
 - Moving a link should be simple from the list item itself.
 - Copy and delete actions should be easy to access.
@@ -162,9 +172,12 @@ Allowed actions:
   - `Unclassified`
   - `Casual`
   - `Serious`
+- The home screen should act as a navigation hub only.
+- A prominent `+` action on the home screen should open the add-source flow.
+- Selecting a bracket should navigate to a separate bracket page.
 - When the user is inside one bracket view, the app should expose a left navigation drawer for moving between views.
 - Separate add-source flow
-- Each of `Casual` and `Serious` should also provide access to its own completed view.
+- Each of `Casual` and `Serious` should also provide access to its own completed/read-only view.
 - Simple source item actions:
   - open
   - copy

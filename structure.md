@@ -28,6 +28,10 @@
 
 ## Notes
 
-- The current UI is intentionally minimal: one screen with add fields, filter chips, and a compact source list.
+- The intended V1 UI structure is:
+  - a home screen with the existing app header and a visible `+` add action
+  - three selector entries on the home screen: `Unclassified`, `Casual`, `Serious`
+  - dedicated destination pages for each bracket instead of inline URL lists on the home screen
+  - bracket pages for `Casual` and `Serious` that can switch to an only-read/completed view
 - The app is local-first. Data is stored only in Room; there is no sync or account layer.
 - `app/app/build/` contains generated build output and is not part of the source structure.
