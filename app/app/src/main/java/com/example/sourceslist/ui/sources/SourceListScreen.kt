@@ -120,8 +120,8 @@ private fun SourceItem(
         )
     ) {
         Column(
-            modifier = Modifier.padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -130,7 +130,7 @@ private fun SourceItem(
             ) {
                 Column(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
                     Text(
                         text = displayTitle,
@@ -163,34 +163,33 @@ private fun SourceItem(
             }
 
             if (actionsExpanded) {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     if (canMove && moveTargets.isNotEmpty()) {
-                        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp),
+                            itemVerticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(
-                                text = "Move to",
+                                text = "Move to:",
                                 style = MaterialTheme.typography.labelMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-                            FlowRow(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                moveTargets.forEach { bracket ->
-                                    AssistChip(
-                                        onClick = {
-                                            actionsExpanded = false
-                                            onMove(source, bracket)
-                                        },
-                                        label = { Text(bracket.label) }
-                                    )
-                                }
+                            moveTargets.forEach { bracket ->
+                                AssistChip(
+                                    onClick = {
+                                        actionsExpanded = false
+                                        onMove(source, bracket)
+                                    },
+                                    label = { Text(bracket.label) }
+                                )
                             }
                         }
                     }
 
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         if (!showCompleted && source.bracket != BracketType.UNCLASSIFIED) {
                             ElevatedAssistChip(
