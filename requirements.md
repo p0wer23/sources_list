@@ -1,6 +1,6 @@
 # Sources List Requirements
 
-Tech stack:
+Stack:
 - Kotlin
 - Jetpack Compose + Material 3
 - MVVM
@@ -9,22 +9,18 @@ Tech stack:
 - Gradle + KSP
 - same general setup as `../GOAL_app`
 
-Core data:
-- `SourceEntity`
-- fields: `sourceId`, `url`, `title`, `bracket`, `isDone`, `createdAt`, `updatedAt`
+Data:
+- `SourceEntity(sourceId, url, title, bracket, isDone, createdAt, updatedAt)`
 - `BracketType`: `UNCLASSIFIED`, `CASUAL`, `SERIOUS`
 
-Current UI flow:
-- home shows only `Unclassified`, `Casual`, `Serious`
-- home has a visible `+` action for add-source
+Behavior:
+- home shows only `Sources List`, `Unclassified`, `Casual`, `Serious`
+- home has a visible `+`
 - tapping a selector opens that bracket page
-- home does not preview URLs inline
-- `Casual` and `Serious` provide active/completed views
-
-V1 behavior:
 - new URLs save into `Unclassified`
 - add screen validates blank/invalid URLs inline
+- duplicate saves warn and stay on add screen until confirm/cancel
 - bracket pages allow open, copy, move, delete
-- `Casual` and `Serious` allow mark-done and restore
-- duplicate URL save should warn before adding again and keep add-screen context until confirmed or canceled
+- `Casual` and `Serious` support active/completed, done, restore
+- lists are ordered by `createdAt` ascending
 - all data stays local in Room

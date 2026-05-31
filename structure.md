@@ -13,10 +13,10 @@
 - `ui/common/`
 - `ui/theme/`
 
-UI notes:
+UI:
 - `SourcesApp.kt` owns app navigation
 - `AddSourceScreen.kt` handles add-source flow
-- `SourceListScreen.kt` renders a single bracket list
+- `SourceListScreen.kt` renders bracket items and actions
 - `SourceViewModel.kt` exposes Room-backed state and actions
 
 Other:
