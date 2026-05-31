@@ -6,6 +6,7 @@
 ## Core Documents
 - Intent: `./intent.md`
 - Requirements: `./requirements.md`
+- Structure: `./structure.md`
 
 ## Project Direction
 - Use the same tech stack and tools as `../GOAL_app`.
