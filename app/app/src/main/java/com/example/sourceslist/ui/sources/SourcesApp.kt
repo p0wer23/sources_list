@@ -2,24 +2,18 @@ package com.example.sourceslist.ui.sources
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -48,8 +42,7 @@ import androidx.navigation.navArgument
 import com.example.sourceslist.data.entity.BracketType
 
 private data class HomeBracketSelector(
-    val bracket: BracketType,
-    val description: String
+    val bracket: BracketType
 )
 
 private object SourcesRoute {
@@ -62,46 +55,18 @@ private object SourcesRoute {
 
 private val homeSelectors = listOf(
     HomeBracketSelector(
-        bracket = BracketType.UNCLASSIFIED,
-        description = "New links waiting for a decision."
+        bracket = BracketType.UNCLASSIFIED
     ),
     HomeBracketSelector(
-        bracket = BracketType.CASUAL,
-        description = "Things you can read or watch whenever."
+        bracket = BracketType.CASUAL
     ),
     HomeBracketSelector(
-        bracket = BracketType.SERIOUS,
-        description = "Items that need focused time."
+        bracket = BracketType.SERIOUS
     )
 )
 
-private val forwardEnterTransition: EnterTransition =
-    fadeIn(animationSpec = tween(durationMillis = 140)) +
-        slideInHorizontally(
-            animationSpec = tween(durationMillis = 180),
-            initialOffsetX = { it / 8 }
-        )
-
-private val forwardExitTransition: ExitTransition =
-    fadeOut(animationSpec = tween(durationMillis = 120)) +
-        slideOutHorizontally(
-            animationSpec = tween(durationMillis = 160),
-            targetOffsetX = { -it / 12 }
-        )
-
-private val backEnterTransition: EnterTransition =
-    fadeIn(animationSpec = tween(durationMillis = 140)) +
-        slideInHorizontally(
-            animationSpec = tween(durationMillis = 180),
-            initialOffsetX = { -it / 8 }
-        )
-
-private val backExitTransition: ExitTransition =
-    fadeOut(animationSpec = tween(durationMillis = 120)) +
-        slideOutHorizontally(
-            animationSpec = tween(durationMillis = 160),
-            targetOffsetX = { it / 12 }
-        )
+private val noEnterTransition: EnterTransition = EnterTransition.None
+private val noExitTransition: ExitTransition = ExitTransition.None
 
 @Composable
 fun SourcesApp(viewModel: SourceViewModel) {
@@ -115,10 +80,10 @@ fun SourcesApp(viewModel: SourceViewModel) {
     ) {
         composable(
             route = SourcesRoute.HOME,
-            enterTransition = { backEnterTransition },
-            exitTransition = { forwardExitTransition },
-            popEnterTransition = { backEnterTransition },
-            popExitTransition = { backExitTransition }
+            enterTransition = { noEnterTransition },
+            exitTransition = { noExitTransition },
+            popEnterTransition = { noEnterTransition },
+            popExitTransition = { noExitTransition }
         ) {
             HomeScreen(
                 onAddSource = { navController.navigate(SourcesRoute.ADD) },
@@ -129,10 +94,10 @@ fun SourcesApp(viewModel: SourceViewModel) {
         }
         composable(
             route = SourcesRoute.ADD,
-            enterTransition = { forwardEnterTransition },
-            exitTransition = { forwardExitTransition },
-            popEnterTransition = { backEnterTransition },
-            popExitTransition = { backExitTransition }
+            enterTransition = { noEnterTransition },
+            exitTransition = { noExitTransition },
+            popEnterTransition = { noEnterTransition },
+            popExitTransition = { noExitTransition }
         ) {
             AddSourceScreen(
                 onBack = {
@@ -160,10 +125,10 @@ fun SourcesApp(viewModel: SourceViewModel) {
         composable(
             route = SourcesRoute.BRACKET,
             arguments = listOf(navArgument("bracket") { type = NavType.StringType }),
-            enterTransition = { forwardEnterTransition },
-            exitTransition = { forwardExitTransition },
-            popEnterTransition = { backEnterTransition },
-            popExitTransition = { backExitTransition }
+            enterTransition = { noEnterTransition },
+            exitTransition = { noExitTransition },
+            popEnterTransition = { noEnterTransition },
+            popExitTransition = { noExitTransition }
         ) { backStackEntry ->
             val bracketName = backStackEntry.arguments?.getString("bracket")
             val bracket = BracketType.entries.firstOrNull { it.name == bracketName }
@@ -208,7 +173,6 @@ private fun HomeScreen(
             homeSelectors.forEach { selector ->
                 BracketSelectorCard(
                     bracket = selector.bracket,
-                    description = selector.description,
                     onClick = { onOpenBracket(selector.bracket) }
                 )
             }
@@ -219,7 +183,6 @@ private fun HomeScreen(
 @Composable
 private fun BracketSelectorCard(
     bracket: BracketType,
-    description: String,
     onClick: () -> Unit
 ) {
     Card(
@@ -245,16 +208,11 @@ private fun BracketSelectorCard(
                     text = bracket.label,
                     style = MaterialTheme.typography.titleLarge
                 )
-                Text(
-                    text = description,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
             }
-            Text(
-                text = ">",
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.primary
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
             )
         }
     }
