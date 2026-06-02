@@ -27,5 +27,6 @@ Behavior:
 - completed URLs cannot move to another bracket
 - source actions are inline on the card, not in a popup menu
 - active `Casual`/`Serious` lists are ordered by priority first, then `createdAt` ascending
+- active `Casual`/`Serious` lists show a divider between priority items and the rest when both groups exist
 - `Unclassified` and completed lists are ordered by `createdAt` ascending
 - all data stays local in Room

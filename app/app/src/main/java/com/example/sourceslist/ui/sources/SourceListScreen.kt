@@ -21,6 +21,7 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedAssistChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -54,6 +55,12 @@ fun SourceListScreen(
     } else {
         viewModel.activeSources(bracket).collectAsState(initial = emptyList())
     }
+    val prioritizedSources = sources.filter { it.priorityRank != null }
+    val regularSources = sources.filter { it.priorityRank == null }
+    val showPriorityDivider = !showCompleted &&
+        bracket != BracketType.UNCLASSIFIED &&
+        prioritizedSources.isNotEmpty() &&
+        regularSources.isNotEmpty()
 
     if (sources.isEmpty()) {
         EmptyState(bracket = bracket, showCompleted = showCompleted)
@@ -63,7 +70,8 @@ fun SourceListScreen(
             contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            items(sources, key = { it.sourceId }) { source ->
+            val listItems = if (showPriorityDivider) prioritizedSources else sources
+            items(listItems, key = { it.sourceId }) { source ->
                 SourceItem(
                     source = source,
                     showCompleted = showCompleted,
@@ -74,6 +82,25 @@ fun SourceListScreen(
                     onSetPriority = viewModel::setPriority,
                     onClearPriority = viewModel::clearPriority
                 )
+            }
+
+            if (showPriorityDivider) {
+                item(key = "priority-divider") {
+                    PriorityDivider()
+                }
+
+                items(regularSources, key = { it.sourceId }) { source ->
+                    SourceItem(
+                        source = source,
+                        showCompleted = showCompleted,
+                        onMove = viewModel::moveSource,
+                        onDone = viewModel::markDone,
+                        onRestore = viewModel::restore,
+                        onDelete = viewModel::delete,
+                        onSetPriority = viewModel::setPriority,
+                        onClearPriority = viewModel::clearPriority
+                    )
+                }
             }
         }
     }
@@ -97,6 +124,14 @@ private fun EmptyState(bracket: BracketType, showCompleted: Boolean) {
             style = MaterialTheme.typography.titleMedium
         )
     }
+}
+
+@Composable
+private fun PriorityDivider() {
+    HorizontalDivider(
+        modifier = Modifier.padding(vertical = 8.dp),
+        color = MaterialTheme.colorScheme.outlineVariant
+    )
 }
 
 @Composable

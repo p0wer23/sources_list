@@ -16,7 +16,7 @@
 UI:
 - `SourcesApp.kt` owns app navigation
 - `AddSourceScreen.kt` handles add-source flow
-- `SourceListScreen.kt` renders bracket items with inline actions and priority controls
+- `SourceListScreen.kt` renders bracket items with inline actions, priority controls, and the priority/backlog divider
 - `SourceViewModel.kt` exposes Room-backed state, actions, and priority updates
 - `ExternalActions.kt` routes outbound links, including Substack app opens
 
