@@ -16,8 +16,9 @@
 UI:
 - `SourcesApp.kt` owns app navigation
 - `AddSourceScreen.kt` handles add-source flow
-- `SourceListScreen.kt` renders bracket items and actions
+- `SourceListScreen.kt` renders bracket items with inline actions
 - `SourceViewModel.kt` exposes Room-backed state and actions
+- `ExternalActions.kt` routes outbound links, including Substack app opens
 
 Other:
 - `app/app/schemas/` stores Room schema output

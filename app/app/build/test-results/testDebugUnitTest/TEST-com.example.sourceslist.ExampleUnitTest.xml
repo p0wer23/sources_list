@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.example.sourceslist.ExampleUnitTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-05-31T17:25:01.639Z" hostname="punith-Inspiron-14-5410-2-in-1" time="0.005">
+<testsuite name="com.example.sourceslist.ExampleUnitTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-06-02T04:18:21.303Z" hostname="punith-Inspiron-14-5410-2-in-1" time="0.083">
   <properties/>
-  <testcase name="addition_isCorrect" classname="com.example.sourceslist.ExampleUnitTest" time="0.002"/>
+  <testcase name="non_substack_urls_are_left_unchanged" classname="com.example.sourceslist.ExampleUnitTest" time="0.024"/>
+  <testcase name="substack_post_urls_are_rewritten_for_the_app" classname="com.example.sourceslist.ExampleUnitTest" time="0.047"/>
+  <testcase name="substack_urls_target_the_substack_package" classname="com.example.sourceslist.ExampleUnitTest" time="0.008"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

@@ -21,6 +21,9 @@ Behavior:
 - add screen validates blank/invalid URLs inline
 - duplicate saves warn and stay on add screen until confirm/cancel
 - bracket pages allow open, copy, move, delete
+- Substack URLs open in the Substack Android app when installed, using `open.substack.com` app links
 - `Casual` and `Serious` support active/completed, done, restore
+- completed URLs cannot move to another bracket
+- source actions are inline on the card, not in a popup menu
 - lists are ordered by `createdAt` ascending
 - all data stays local in Room

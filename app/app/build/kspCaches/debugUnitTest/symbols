@@ -1,1 +1,1 @@
-{"src/test/java/com/example/sourceslist/ExampleUnitTest.kt":["addition_isCorrect:com.example.sourceslist.ExampleUnitTest","ExampleUnitTest:com.example.sourceslist"]}
+{"src/test/java/com/example/sourceslist/ExampleUnitTest.kt":["substack_urls_target_the_substack_package:com.example.sourceslist.ExampleUnitTest","substack_post_urls_are_rewritten_for_the_app:com.example.sourceslist.ExampleUnitTest","ExampleUnitTest:com.example.sourceslist","non_substack_urls_are_left_unchanged:com.example.sourceslist.ExampleUnitTest"]}
