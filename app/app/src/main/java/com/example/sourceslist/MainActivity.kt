@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
             SourcesListTheme {
                 val database = AppDatabase.getDatabase(applicationContext)
                 val viewModel: SourceViewModel = viewModel(
-                    factory = SourceViewModelFactory(SourceRepository(database.sourceDao()))
+                    factory = SourceViewModelFactory(SourceRepository(database))
                 )
                 SourcesApp(viewModel = viewModel)
             }

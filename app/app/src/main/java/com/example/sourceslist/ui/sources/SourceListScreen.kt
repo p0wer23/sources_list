@@ -70,7 +70,9 @@ fun SourceListScreen(
                     onMove = viewModel::moveSource,
                     onDone = viewModel::markDone,
                     onRestore = viewModel::restore,
-                    onDelete = viewModel::delete
+                    onDelete = viewModel::delete,
+                    onSetPriority = viewModel::setPriority,
+                    onClearPriority = viewModel::clearPriority
                 )
             }
         }
@@ -104,13 +106,16 @@ private fun SourceItem(
     onMove: (SourceEntity, BracketType) -> Unit,
     onDone: (SourceEntity) -> Unit,
     onRestore: (SourceEntity) -> Unit,
-    onDelete: (SourceEntity) -> Unit
+    onDelete: (SourceEntity) -> Unit,
+    onSetPriority: (SourceEntity, Int) -> Unit,
+    onClearPriority: (SourceEntity) -> Unit
 ) {
     val context = LocalContext.current
     var actionsExpanded by rememberSaveable(source.sourceId) { mutableStateOf(false) }
     var confirmDelete by rememberSaveable(source.sourceId) { mutableStateOf(false) }
     val displayTitle = source.title?.takeIf { it.isNotBlank() } ?: source.url
     val canMove = !source.isDone
+    val canPrioritize = !showCompleted && !source.isDone && source.bracket != BracketType.UNCLASSIFIED
     val moveTargets = BracketType.entries.filter { it != source.bracket }
 
     Card(
@@ -187,6 +192,39 @@ private fun SourceItem(
                         }
                     }
 
+                    if (canPrioritize) {
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp),
+                            itemVerticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Priority:",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            (1..3).forEach { rank ->
+                                AssistChip(
+                                    onClick = {
+                                        actionsExpanded = false
+                                        onSetPriority(source, rank)
+                                    },
+                                    enabled = source.priorityRank != rank,
+                                    label = { Text("Set P$rank") }
+                                )
+                            }
+                            if (source.priorityRank != null) {
+                                AssistChip(
+                                    onClick = {
+                                        actionsExpanded = false
+                                        onClearPriority(source)
+                                    },
+                                    label = { Text("Clear priority") }
+                                )
+                            }
+                        }
+                    }
+
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(6.dp)
@@ -231,6 +269,12 @@ private fun SourceItem(
                     onClick = {},
                     label = { Text(source.bracket.label) }
                 )
+                if (!source.isDone && source.priorityRank != null) {
+                    ElevatedAssistChip(
+                        onClick = {},
+                        label = { Text("P${source.priorityRank}") }
+                    )
+                }
                 if (source.isDone) {
                     ElevatedAssistChip(
                         onClick = {},

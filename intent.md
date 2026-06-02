@@ -11,4 +11,5 @@ V1:
 - open, copy, move, delete
 - open Substack links in the Substack app when available
 - done/restore for `Casual` and `Serious`
+- ranked `P1`/`P2`/`P3` priorities for active `Casual` and `Serious`
 - completed URLs cannot move

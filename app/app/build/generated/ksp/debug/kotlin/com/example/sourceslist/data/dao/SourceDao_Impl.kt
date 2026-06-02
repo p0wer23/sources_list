@@ -40,7 +40,7 @@ public class SourceDao_Impl(
   init {
     this.__db = __db
     this.__insertAdapterOfSourceEntity = object : EntityInsertAdapter<SourceEntity>() {
-      protected override fun createQuery(): String = "INSERT OR ABORT INTO `sources` (`sourceId`,`url`,`title`,`bracket`,`isDone`,`createdAt`,`updatedAt`) VALUES (nullif(?, 0),?,?,?,?,?,?)"
+      protected override fun createQuery(): String = "INSERT OR ABORT INTO `sources` (`sourceId`,`url`,`title`,`bracket`,`priorityRank`,`isDone`,`createdAt`,`updatedAt`) VALUES (nullif(?, 0),?,?,?,?,?,?,?)"
 
       protected override fun bind(statement: SQLiteStatement, entity: SourceEntity) {
         statement.bindLong(1, entity.sourceId)
@@ -53,10 +53,16 @@ public class SourceDao_Impl(
         }
         val _tmp: String = __converters.fromBracketType(entity.bracket)
         statement.bindText(4, _tmp)
+        val _tmpPriorityRank: Int? = entity.priorityRank
+        if (_tmpPriorityRank == null) {
+          statement.bindNull(5)
+        } else {
+          statement.bindLong(5, _tmpPriorityRank.toLong())
+        }
         val _tmp_1: Int = if (entity.isDone) 1 else 0
-        statement.bindLong(5, _tmp_1.toLong())
-        statement.bindLong(6, entity.createdAt)
-        statement.bindLong(7, entity.updatedAt)
+        statement.bindLong(6, _tmp_1.toLong())
+        statement.bindLong(7, entity.createdAt)
+        statement.bindLong(8, entity.updatedAt)
       }
     }
     this.__deleteAdapterOfSourceEntity = object : EntityDeleteOrUpdateAdapter<SourceEntity>() {
@@ -67,7 +73,7 @@ public class SourceDao_Impl(
       }
     }
     this.__updateAdapterOfSourceEntity = object : EntityDeleteOrUpdateAdapter<SourceEntity>() {
-      protected override fun createQuery(): String = "UPDATE OR ABORT `sources` SET `sourceId` = ?,`url` = ?,`title` = ?,`bracket` = ?,`isDone` = ?,`createdAt` = ?,`updatedAt` = ? WHERE `sourceId` = ?"
+      protected override fun createQuery(): String = "UPDATE OR ABORT `sources` SET `sourceId` = ?,`url` = ?,`title` = ?,`bracket` = ?,`priorityRank` = ?,`isDone` = ?,`createdAt` = ?,`updatedAt` = ? WHERE `sourceId` = ?"
 
       protected override fun bind(statement: SQLiteStatement, entity: SourceEntity) {
         statement.bindLong(1, entity.sourceId)
@@ -80,17 +86,24 @@ public class SourceDao_Impl(
         }
         val _tmp: String = __converters.fromBracketType(entity.bracket)
         statement.bindText(4, _tmp)
+        val _tmpPriorityRank: Int? = entity.priorityRank
+        if (_tmpPriorityRank == null) {
+          statement.bindNull(5)
+        } else {
+          statement.bindLong(5, _tmpPriorityRank.toLong())
+        }
         val _tmp_1: Int = if (entity.isDone) 1 else 0
-        statement.bindLong(5, _tmp_1.toLong())
-        statement.bindLong(6, entity.createdAt)
-        statement.bindLong(7, entity.updatedAt)
-        statement.bindLong(8, entity.sourceId)
+        statement.bindLong(6, _tmp_1.toLong())
+        statement.bindLong(7, entity.createdAt)
+        statement.bindLong(8, entity.updatedAt)
+        statement.bindLong(9, entity.sourceId)
       }
     }
   }
 
-  public override suspend fun insert(source: SourceEntity): Unit = performSuspending(__db, false, true) { _connection ->
-    __insertAdapterOfSourceEntity.insert(_connection, source)
+  public override suspend fun insert(source: SourceEntity): Long = performSuspending(__db, false, true) { _connection ->
+    val _result: Long = __insertAdapterOfSourceEntity.insertAndReturnId(_connection, source)
+    _result
   }
 
   public override suspend fun delete(source: SourceEntity): Unit = performSuspending(__db, false, true) { _connection ->
@@ -106,7 +119,10 @@ public class SourceDao_Impl(
         |
         |        SELECT * FROM sources
         |        WHERE bracket = ? AND isDone = 0
-        |        ORDER BY createdAt ASC
+        |        ORDER BY
+        |            CASE WHEN priorityRank IS NULL THEN 1 ELSE 0 END ASC,
+        |            priorityRank ASC,
+        |            createdAt ASC
         |        
         """.trimMargin()
     return createFlow(__db, false, arrayOf("sources")) { _connection ->
@@ -119,6 +135,7 @@ public class SourceDao_Impl(
         val _columnIndexOfUrl: Int = getColumnIndexOrThrow(_stmt, "url")
         val _columnIndexOfTitle: Int = getColumnIndexOrThrow(_stmt, "title")
         val _columnIndexOfBracket: Int = getColumnIndexOrThrow(_stmt, "bracket")
+        val _columnIndexOfPriorityRank: Int = getColumnIndexOrThrow(_stmt, "priorityRank")
         val _columnIndexOfIsDone: Int = getColumnIndexOrThrow(_stmt, "isDone")
         val _columnIndexOfCreatedAt: Int = getColumnIndexOrThrow(_stmt, "createdAt")
         val _columnIndexOfUpdatedAt: Int = getColumnIndexOrThrow(_stmt, "updatedAt")
@@ -139,6 +156,12 @@ public class SourceDao_Impl(
           val _tmp_1: String
           _tmp_1 = _stmt.getText(_columnIndexOfBracket)
           _tmpBracket = __converters.toBracketType(_tmp_1)
+          val _tmpPriorityRank: Int?
+          if (_stmt.isNull(_columnIndexOfPriorityRank)) {
+            _tmpPriorityRank = null
+          } else {
+            _tmpPriorityRank = _stmt.getLong(_columnIndexOfPriorityRank).toInt()
+          }
           val _tmpIsDone: Boolean
           val _tmp_2: Int
           _tmp_2 = _stmt.getLong(_columnIndexOfIsDone).toInt()
@@ -147,7 +170,7 @@ public class SourceDao_Impl(
           _tmpCreatedAt = _stmt.getLong(_columnIndexOfCreatedAt)
           val _tmpUpdatedAt: Long
           _tmpUpdatedAt = _stmt.getLong(_columnIndexOfUpdatedAt)
-          _item = SourceEntity(_tmpSourceId,_tmpUrl,_tmpTitle,_tmpBracket,_tmpIsDone,_tmpCreatedAt,_tmpUpdatedAt)
+          _item = SourceEntity(_tmpSourceId,_tmpUrl,_tmpTitle,_tmpBracket,_tmpPriorityRank,_tmpIsDone,_tmpCreatedAt,_tmpUpdatedAt)
           _result.add(_item)
         }
         _result
@@ -175,6 +198,7 @@ public class SourceDao_Impl(
         val _columnIndexOfUrl: Int = getColumnIndexOrThrow(_stmt, "url")
         val _columnIndexOfTitle: Int = getColumnIndexOrThrow(_stmt, "title")
         val _columnIndexOfBracket: Int = getColumnIndexOrThrow(_stmt, "bracket")
+        val _columnIndexOfPriorityRank: Int = getColumnIndexOrThrow(_stmt, "priorityRank")
         val _columnIndexOfIsDone: Int = getColumnIndexOrThrow(_stmt, "isDone")
         val _columnIndexOfCreatedAt: Int = getColumnIndexOrThrow(_stmt, "createdAt")
         val _columnIndexOfUpdatedAt: Int = getColumnIndexOrThrow(_stmt, "updatedAt")
@@ -195,6 +219,12 @@ public class SourceDao_Impl(
           val _tmp_1: String
           _tmp_1 = _stmt.getText(_columnIndexOfBracket)
           _tmpBracket = __converters.toBracketType(_tmp_1)
+          val _tmpPriorityRank: Int?
+          if (_stmt.isNull(_columnIndexOfPriorityRank)) {
+            _tmpPriorityRank = null
+          } else {
+            _tmpPriorityRank = _stmt.getLong(_columnIndexOfPriorityRank).toInt()
+          }
           val _tmpIsDone: Boolean
           val _tmp_2: Int
           _tmp_2 = _stmt.getLong(_columnIndexOfIsDone).toInt()
@@ -203,7 +233,7 @@ public class SourceDao_Impl(
           _tmpCreatedAt = _stmt.getLong(_columnIndexOfCreatedAt)
           val _tmpUpdatedAt: Long
           _tmpUpdatedAt = _stmt.getLong(_columnIndexOfUpdatedAt)
-          _item = SourceEntity(_tmpSourceId,_tmpUrl,_tmpTitle,_tmpBracket,_tmpIsDone,_tmpCreatedAt,_tmpUpdatedAt)
+          _item = SourceEntity(_tmpSourceId,_tmpUrl,_tmpTitle,_tmpBracket,_tmpPriorityRank,_tmpIsDone,_tmpCreatedAt,_tmpUpdatedAt)
           _result.add(_item)
         }
         _result
@@ -229,6 +259,219 @@ public class SourceDao_Impl(
           _result = 0
         }
         _result
+      } finally {
+        _stmt.close()
+      }
+    }
+  }
+
+  public override suspend fun getSourceById(sourceId: Long): SourceEntity? {
+    val _sql: String = "SELECT * FROM sources WHERE sourceId = ?"
+    return performSuspending(__db, true, false) { _connection ->
+      val _stmt: SQLiteStatement = _connection.prepare(_sql)
+      try {
+        var _argIndex: Int = 1
+        _stmt.bindLong(_argIndex, sourceId)
+        val _columnIndexOfSourceId: Int = getColumnIndexOrThrow(_stmt, "sourceId")
+        val _columnIndexOfUrl: Int = getColumnIndexOrThrow(_stmt, "url")
+        val _columnIndexOfTitle: Int = getColumnIndexOrThrow(_stmt, "title")
+        val _columnIndexOfBracket: Int = getColumnIndexOrThrow(_stmt, "bracket")
+        val _columnIndexOfPriorityRank: Int = getColumnIndexOrThrow(_stmt, "priorityRank")
+        val _columnIndexOfIsDone: Int = getColumnIndexOrThrow(_stmt, "isDone")
+        val _columnIndexOfCreatedAt: Int = getColumnIndexOrThrow(_stmt, "createdAt")
+        val _columnIndexOfUpdatedAt: Int = getColumnIndexOrThrow(_stmt, "updatedAt")
+        val _result: SourceEntity?
+        if (_stmt.step()) {
+          val _tmpSourceId: Long
+          _tmpSourceId = _stmt.getLong(_columnIndexOfSourceId)
+          val _tmpUrl: String
+          _tmpUrl = _stmt.getText(_columnIndexOfUrl)
+          val _tmpTitle: String?
+          if (_stmt.isNull(_columnIndexOfTitle)) {
+            _tmpTitle = null
+          } else {
+            _tmpTitle = _stmt.getText(_columnIndexOfTitle)
+          }
+          val _tmpBracket: BracketType
+          val _tmp: String
+          _tmp = _stmt.getText(_columnIndexOfBracket)
+          _tmpBracket = __converters.toBracketType(_tmp)
+          val _tmpPriorityRank: Int?
+          if (_stmt.isNull(_columnIndexOfPriorityRank)) {
+            _tmpPriorityRank = null
+          } else {
+            _tmpPriorityRank = _stmt.getLong(_columnIndexOfPriorityRank).toInt()
+          }
+          val _tmpIsDone: Boolean
+          val _tmp_1: Int
+          _tmp_1 = _stmt.getLong(_columnIndexOfIsDone).toInt()
+          _tmpIsDone = _tmp_1 != 0
+          val _tmpCreatedAt: Long
+          _tmpCreatedAt = _stmt.getLong(_columnIndexOfCreatedAt)
+          val _tmpUpdatedAt: Long
+          _tmpUpdatedAt = _stmt.getLong(_columnIndexOfUpdatedAt)
+          _result = SourceEntity(_tmpSourceId,_tmpUrl,_tmpTitle,_tmpBracket,_tmpPriorityRank,_tmpIsDone,_tmpCreatedAt,_tmpUpdatedAt)
+        } else {
+          _result = null
+        }
+        _result
+      } finally {
+        _stmt.close()
+      }
+    }
+  }
+
+  public override suspend fun prioritizedSourcesByBracket(bracket: BracketType): List<SourceEntity> {
+    val _sql: String = """
+        |
+        |        SELECT * FROM sources
+        |        WHERE bracket = ? AND isDone = 0 AND priorityRank IS NOT NULL
+        |        ORDER BY priorityRank ASC
+        |        
+        """.trimMargin()
+    return performSuspending(__db, true, false) { _connection ->
+      val _stmt: SQLiteStatement = _connection.prepare(_sql)
+      try {
+        var _argIndex: Int = 1
+        val _tmp: String = __converters.fromBracketType(bracket)
+        _stmt.bindText(_argIndex, _tmp)
+        val _columnIndexOfSourceId: Int = getColumnIndexOrThrow(_stmt, "sourceId")
+        val _columnIndexOfUrl: Int = getColumnIndexOrThrow(_stmt, "url")
+        val _columnIndexOfTitle: Int = getColumnIndexOrThrow(_stmt, "title")
+        val _columnIndexOfBracket: Int = getColumnIndexOrThrow(_stmt, "bracket")
+        val _columnIndexOfPriorityRank: Int = getColumnIndexOrThrow(_stmt, "priorityRank")
+        val _columnIndexOfIsDone: Int = getColumnIndexOrThrow(_stmt, "isDone")
+        val _columnIndexOfCreatedAt: Int = getColumnIndexOrThrow(_stmt, "createdAt")
+        val _columnIndexOfUpdatedAt: Int = getColumnIndexOrThrow(_stmt, "updatedAt")
+        val _result: MutableList<SourceEntity> = mutableListOf()
+        while (_stmt.step()) {
+          val _item: SourceEntity
+          val _tmpSourceId: Long
+          _tmpSourceId = _stmt.getLong(_columnIndexOfSourceId)
+          val _tmpUrl: String
+          _tmpUrl = _stmt.getText(_columnIndexOfUrl)
+          val _tmpTitle: String?
+          if (_stmt.isNull(_columnIndexOfTitle)) {
+            _tmpTitle = null
+          } else {
+            _tmpTitle = _stmt.getText(_columnIndexOfTitle)
+          }
+          val _tmpBracket: BracketType
+          val _tmp_1: String
+          _tmp_1 = _stmt.getText(_columnIndexOfBracket)
+          _tmpBracket = __converters.toBracketType(_tmp_1)
+          val _tmpPriorityRank: Int?
+          if (_stmt.isNull(_columnIndexOfPriorityRank)) {
+            _tmpPriorityRank = null
+          } else {
+            _tmpPriorityRank = _stmt.getLong(_columnIndexOfPriorityRank).toInt()
+          }
+          val _tmpIsDone: Boolean
+          val _tmp_2: Int
+          _tmp_2 = _stmt.getLong(_columnIndexOfIsDone).toInt()
+          _tmpIsDone = _tmp_2 != 0
+          val _tmpCreatedAt: Long
+          _tmpCreatedAt = _stmt.getLong(_columnIndexOfCreatedAt)
+          val _tmpUpdatedAt: Long
+          _tmpUpdatedAt = _stmt.getLong(_columnIndexOfUpdatedAt)
+          _item = SourceEntity(_tmpSourceId,_tmpUrl,_tmpTitle,_tmpBracket,_tmpPriorityRank,_tmpIsDone,_tmpCreatedAt,_tmpUpdatedAt)
+          _result.add(_item)
+        }
+        _result
+      } finally {
+        _stmt.close()
+      }
+    }
+  }
+
+  public override suspend fun getSourceByBracketAndPriority(bracket: BracketType, priorityRank: Int): SourceEntity? {
+    val _sql: String = """
+        |
+        |        SELECT * FROM sources
+        |        WHERE bracket = ? AND isDone = 0 AND priorityRank = ?
+        |        LIMIT 1
+        |        
+        """.trimMargin()
+    return performSuspending(__db, true, false) { _connection ->
+      val _stmt: SQLiteStatement = _connection.prepare(_sql)
+      try {
+        var _argIndex: Int = 1
+        val _tmp: String = __converters.fromBracketType(bracket)
+        _stmt.bindText(_argIndex, _tmp)
+        _argIndex = 2
+        _stmt.bindLong(_argIndex, priorityRank.toLong())
+        val _columnIndexOfSourceId: Int = getColumnIndexOrThrow(_stmt, "sourceId")
+        val _columnIndexOfUrl: Int = getColumnIndexOrThrow(_stmt, "url")
+        val _columnIndexOfTitle: Int = getColumnIndexOrThrow(_stmt, "title")
+        val _columnIndexOfBracket: Int = getColumnIndexOrThrow(_stmt, "bracket")
+        val _columnIndexOfPriorityRank: Int = getColumnIndexOrThrow(_stmt, "priorityRank")
+        val _columnIndexOfIsDone: Int = getColumnIndexOrThrow(_stmt, "isDone")
+        val _columnIndexOfCreatedAt: Int = getColumnIndexOrThrow(_stmt, "createdAt")
+        val _columnIndexOfUpdatedAt: Int = getColumnIndexOrThrow(_stmt, "updatedAt")
+        val _result: SourceEntity?
+        if (_stmt.step()) {
+          val _tmpSourceId: Long
+          _tmpSourceId = _stmt.getLong(_columnIndexOfSourceId)
+          val _tmpUrl: String
+          _tmpUrl = _stmt.getText(_columnIndexOfUrl)
+          val _tmpTitle: String?
+          if (_stmt.isNull(_columnIndexOfTitle)) {
+            _tmpTitle = null
+          } else {
+            _tmpTitle = _stmt.getText(_columnIndexOfTitle)
+          }
+          val _tmpBracket: BracketType
+          val _tmp_1: String
+          _tmp_1 = _stmt.getText(_columnIndexOfBracket)
+          _tmpBracket = __converters.toBracketType(_tmp_1)
+          val _tmpPriorityRank: Int?
+          if (_stmt.isNull(_columnIndexOfPriorityRank)) {
+            _tmpPriorityRank = null
+          } else {
+            _tmpPriorityRank = _stmt.getLong(_columnIndexOfPriorityRank).toInt()
+          }
+          val _tmpIsDone: Boolean
+          val _tmp_2: Int
+          _tmp_2 = _stmt.getLong(_columnIndexOfIsDone).toInt()
+          _tmpIsDone = _tmp_2 != 0
+          val _tmpCreatedAt: Long
+          _tmpCreatedAt = _stmt.getLong(_columnIndexOfCreatedAt)
+          val _tmpUpdatedAt: Long
+          _tmpUpdatedAt = _stmt.getLong(_columnIndexOfUpdatedAt)
+          _result = SourceEntity(_tmpSourceId,_tmpUrl,_tmpTitle,_tmpBracket,_tmpPriorityRank,_tmpIsDone,_tmpCreatedAt,_tmpUpdatedAt)
+        } else {
+          _result = null
+        }
+        _result
+      } finally {
+        _stmt.close()
+      }
+    }
+  }
+
+  public override suspend fun compactPriorities(
+    bracket: BracketType,
+    removedRank: Int,
+    updatedAt: Long,
+  ) {
+    val _sql: String = """
+        |
+        |        UPDATE sources
+        |        SET priorityRank = priorityRank - 1, updatedAt = ?
+        |        WHERE bracket = ? AND isDone = 0 AND priorityRank > ?
+        |        
+        """.trimMargin()
+    return performSuspending(__db, false, true) { _connection ->
+      val _stmt: SQLiteStatement = _connection.prepare(_sql)
+      try {
+        var _argIndex: Int = 1
+        _stmt.bindLong(_argIndex, updatedAt)
+        _argIndex = 2
+        val _tmp: String = __converters.fromBracketType(bracket)
+        _stmt.bindText(_argIndex, _tmp)
+        _argIndex = 3
+        _stmt.bindLong(_argIndex, removedRank.toLong())
+        _stmt.step()
       } finally {
         _stmt.close()
       }

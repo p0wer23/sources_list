@@ -98,6 +98,18 @@ class SourceViewModel(private val repository: SourceRepository) : ViewModel() {
         }
     }
 
+    fun setPriority(source: SourceEntity, rank: Int) {
+        viewModelScope.launch {
+            repository.setPriority(source, rank)
+        }
+    }
+
+    fun clearPriority(source: SourceEntity) {
+        viewModelScope.launch {
+            repository.clearPriority(source)
+        }
+    }
+
     private fun validateUrl(url: String): String? {
         if (url.isBlank()) return "Enter a URL."
 

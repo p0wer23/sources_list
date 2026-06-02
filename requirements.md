@@ -10,7 +10,7 @@ Stack:
 - same general setup as `../GOAL_app`
 
 Data:
-- `SourceEntity(sourceId, url, title, bracket, isDone, createdAt, updatedAt)`
+- `SourceEntity(sourceId, url, title, bracket, priorityRank, isDone, createdAt, updatedAt)`
 - `BracketType`: `UNCLASSIFIED`, `CASUAL`, `SERIOUS`
 
 Behavior:
@@ -23,7 +23,9 @@ Behavior:
 - bracket pages allow open, copy, move, delete
 - Substack URLs open in the Substack Android app when installed, using `open.substack.com` app links
 - `Casual` and `Serious` support active/completed, done, restore
+- active `Casual` and `Serious` sources support ranked `P1`/`P2`/`P3` priorities
 - completed URLs cannot move to another bracket
 - source actions are inline on the card, not in a popup menu
-- lists are ordered by `createdAt` ascending
+- active `Casual`/`Serious` lists are ordered by priority first, then `createdAt` ascending
+- `Unclassified` and completed lists are ordered by `createdAt` ascending
 - all data stays local in Room

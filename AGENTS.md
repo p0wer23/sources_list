@@ -13,3 +13,5 @@
 - Prefer Kotlin + Jetpack Compose + MVVM + Room + Navigation Compose.
 - Use Gradle with AGP, Compose plugin, and KSP, consistent with `../GOAL_app`.
 - Use the latest stable versions of the Android/Kotlin toolchain and libraries at implementation time.
+- after every implementation, rebuild the APK
+- after every implementation, MUST update the markdown docs. Keep all markdown docs very concise

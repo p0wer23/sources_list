@@ -34,11 +34,12 @@ public class AppDatabase_Impl : AppDatabase() {
   }
 
   protected override fun createOpenDelegate(): RoomOpenDelegate {
-    val _openDelegate: RoomOpenDelegate = object : RoomOpenDelegate(1, "124060e1dd4ebbbe82ee1aa5862ee4ff", "2db0e5208a83311bf271c16938c624c3") {
+    val _openDelegate: RoomOpenDelegate = object : RoomOpenDelegate(2, "9081bb0392edd664eb3b6f0037444a9f", "8807a2d1fa622e880d0909758ab914cb") {
       public override fun createAllTables(connection: SQLiteConnection) {
-        connection.execSQL("CREATE TABLE IF NOT EXISTS `sources` (`sourceId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `url` TEXT NOT NULL, `title` TEXT, `bracket` TEXT NOT NULL, `isDone` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL)")
+        connection.execSQL("CREATE TABLE IF NOT EXISTS `sources` (`sourceId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `url` TEXT NOT NULL, `title` TEXT, `bracket` TEXT NOT NULL, `priorityRank` INTEGER, `isDone` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL)")
+        connection.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_sources_bracket_priorityRank` ON `sources` (`bracket`, `priorityRank`)")
         connection.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)")
-        connection.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '124060e1dd4ebbbe82ee1aa5862ee4ff')")
+        connection.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9081bb0392edd664eb3b6f0037444a9f')")
       }
 
       public override fun dropAllTables(connection: SQLiteConnection) {
@@ -65,11 +66,13 @@ public class AppDatabase_Impl : AppDatabase() {
         _columnsSources.put("url", TableInfo.Column("url", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY))
         _columnsSources.put("title", TableInfo.Column("title", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY))
         _columnsSources.put("bracket", TableInfo.Column("bracket", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY))
+        _columnsSources.put("priorityRank", TableInfo.Column("priorityRank", "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY))
         _columnsSources.put("isDone", TableInfo.Column("isDone", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY))
         _columnsSources.put("createdAt", TableInfo.Column("createdAt", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY))
         _columnsSources.put("updatedAt", TableInfo.Column("updatedAt", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY))
         val _foreignKeysSources: MutableSet<TableInfo.ForeignKey> = mutableSetOf()
         val _indicesSources: MutableSet<TableInfo.Index> = mutableSetOf()
+        _indicesSources.add(TableInfo.Index("index_sources_bracket_priorityRank", true, listOf("bracket", "priorityRank"), listOf("ASC", "ASC")))
         val _infoSources: TableInfo = TableInfo("sources", _columnsSources, _foreignKeysSources, _indicesSources)
         val _existingSources: TableInfo = read(connection, "sources")
         if (!_infoSources.equals(_existingSources)) {
