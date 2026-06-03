@@ -24,6 +24,7 @@ Behavior:
 - Substack URLs open in the Substack Android app when installed, using `open.substack.com` app links
 - `Casual` and `Serious` support active/completed, done, restore
 - active `Casual` and `Serious` sources support ranked `P1`/`P2`/`P3` priorities
+- priority actions use compact `P1`/`P2`/`P3` and `Clear` chips
 - completed URLs cannot move to another bracket
 - source actions are inline on the card, not in a popup menu
 - active `Casual`/`Serious` lists are ordered by priority first, then `createdAt` ascending

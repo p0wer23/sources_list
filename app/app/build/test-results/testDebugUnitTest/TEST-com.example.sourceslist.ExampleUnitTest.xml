@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.example.sourceslist.ExampleUnitTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-06-02T17:23:58.014Z" hostname="punith-Inspiron-14-5410-2-in-1" time="0.041">
+<testsuite name="com.example.sourceslist.ExampleUnitTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-06-03T11:19:04.668Z" hostname="punith-Inspiron-14-5410-2-in-1" time="0.05">
   <properties/>
-  <testcase name="non_substack_urls_are_left_unchanged" classname="com.example.sourceslist.ExampleUnitTest" time="0.009"/>
-  <testcase name="substack_post_urls_are_rewritten_for_the_app" classname="com.example.sourceslist.ExampleUnitTest" time="0.026"/>
+  <testcase name="non_substack_urls_are_left_unchanged" classname="com.example.sourceslist.ExampleUnitTest" time="0.014"/>
+  <testcase name="substack_post_urls_are_rewritten_for_the_app" classname="com.example.sourceslist.ExampleUnitTest" time="0.027"/>
   <testcase name="substack_urls_target_the_substack_package" classname="com.example.sourceslist.ExampleUnitTest" time="0.004"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

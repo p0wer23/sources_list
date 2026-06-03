@@ -245,7 +245,7 @@ private fun SourceItem(
                                         onSetPriority(source, rank)
                                     },
                                     enabled = source.priorityRank != rank,
-                                    label = { Text("Set P$rank") }
+                                    label = { Text("P$rank") }
                                 )
                             }
                             if (source.priorityRank != null) {
@@ -254,7 +254,7 @@ private fun SourceItem(
                                         actionsExpanded = false
                                         onClearPriority(source)
                                     },
-                                    label = { Text("Clear priority") }
+                                    label = { Text("Clear") }
                                 )
                             }
                         }
