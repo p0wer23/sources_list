@@ -3,8 +3,11 @@ package com.example.sourceslist.ui.sources
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.sourceslist.data.SeriousGroupMutationResult
+import com.example.sourceslist.data.SeriousGroupSummary
 import com.example.sourceslist.data.SourceRepository
 import com.example.sourceslist.data.entity.BracketType
+import com.example.sourceslist.data.entity.SeriousGroupEntity
 import com.example.sourceslist.data.entity.SourceEntity
 import java.net.URI
 import kotlinx.coroutines.flow.Flow
@@ -24,11 +27,26 @@ class SourceViewModel(private val repository: SourceRepository) : ViewModel() {
     private val _urlError = MutableStateFlow<String?>(null)
     val urlError: StateFlow<String?> = _urlError.asStateFlow()
 
-    fun activeSources(bracket: BracketType): Flow<List<SourceEntity>> =
-        repository.activeSources(bracket)
+    fun activeSources(
+        bracket: BracketType,
+        seriousGroupId: Long? = null
+    ): Flow<List<SourceEntity>> =
+        repository.activeSources(bracket, seriousGroupId)
 
-    fun completedSources(bracket: BracketType): Flow<List<SourceEntity>> =
-        repository.completedSources(bracket)
+    fun completedSources(
+        bracket: BracketType,
+        seriousGroupId: Long? = null
+    ): Flow<List<SourceEntity>> =
+        repository.completedSources(bracket, seriousGroupId)
+
+    fun seriousGroupSummaries(): Flow<List<SeriousGroupSummary>> =
+        repository.seriousGroupSummaries()
+
+    fun seriousGroups(): Flow<List<SeriousGroupEntity>> =
+        repository.seriousGroups()
+
+    fun seriousGroup(groupId: Long): Flow<SeriousGroupEntity?> =
+        repository.seriousGroup(groupId)
 
     fun addSource(url: String, title: String?, onAdded: () -> Unit = {}) {
         val trimmedUrl = url.trim()
@@ -72,11 +90,15 @@ class SourceViewModel(private val repository: SourceRepository) : ViewModel() {
         _pendingDuplicate.value = null
     }
 
-    fun moveSource(source: SourceEntity, bracket: BracketType) {
+    fun moveSource(
+        source: SourceEntity,
+        bracket: BracketType,
+        seriousGroupId: Long? = null
+    ) {
         if (source.isDone) return
 
         viewModelScope.launch {
-            repository.moveSource(source, bracket)
+            repository.moveSource(source, bracket, seriousGroupId)
         }
     }
 
@@ -107,6 +129,55 @@ class SourceViewModel(private val repository: SourceRepository) : ViewModel() {
     fun clearPriority(source: SourceEntity) {
         viewModelScope.launch {
             repository.clearPriority(source)
+        }
+    }
+
+    fun addSeriousGroup(
+        name: String,
+        onSuccess: () -> Unit = {},
+        onError: (String) -> Unit = {}
+    ) {
+        viewModelScope.launch {
+            when (repository.addSeriousGroup(name)) {
+                SeriousGroupMutationResult.SUCCESS -> onSuccess()
+                SeriousGroupMutationResult.BLANK_NAME -> onError("Enter a group name.")
+                SeriousGroupMutationResult.DUPLICATE_NAME -> onError("Group name already exists.")
+                SeriousGroupMutationResult.NOT_ALLOWED -> onError("Could not save group.")
+            }
+        }
+    }
+
+    fun renameSeriousGroup(
+        groupId: Long,
+        name: String,
+        onSuccess: () -> Unit = {},
+        onError: (String) -> Unit = {}
+    ) {
+        viewModelScope.launch {
+            when (repository.renameSeriousGroup(groupId, name)) {
+                SeriousGroupMutationResult.SUCCESS -> onSuccess()
+                SeriousGroupMutationResult.BLANK_NAME -> onError("Enter a group name.")
+                SeriousGroupMutationResult.DUPLICATE_NAME -> onError("Group name already exists.")
+                SeriousGroupMutationResult.NOT_ALLOWED -> onError("Could not rename group.")
+            }
+        }
+    }
+
+    fun deleteSeriousGroup(groupId: Long) {
+        viewModelScope.launch {
+            repository.deleteSeriousGroup(groupId)
+        }
+    }
+
+    fun setSeriousGroupPriority(groupId: Long, rank: Int) {
+        viewModelScope.launch {
+            repository.setSeriousGroupPriority(groupId, rank)
+        }
+    }
+
+    fun clearSeriousGroupPriority(groupId: Long) {
+        viewModelScope.launch {
+            repository.clearSeriousGroupPriority(groupId)
         }
     }
 

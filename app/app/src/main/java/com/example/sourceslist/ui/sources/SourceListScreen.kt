@@ -1,8 +1,8 @@
 package com.example.sourceslist.ui.sources
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,11 +27,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.sourceslist.data.entity.BracketType
+import com.example.sourceslist.data.entity.SeriousGroupEntity
 import com.example.sourceslist.data.entity.SourceEntity
 import com.example.sourceslist.ui.common.copyLink
 import com.example.sourceslist.ui.common.openLink
@@ -48,13 +49,15 @@ import com.example.sourceslist.ui.common.openLink
 fun SourceListScreen(
     viewModel: SourceViewModel,
     bracket: BracketType,
-    showCompleted: Boolean
+    showCompleted: Boolean,
+    seriousGroupId: Long? = null
 ) {
     val sources by if (showCompleted) {
-        viewModel.completedSources(bracket).collectAsState(initial = emptyList())
+        viewModel.completedSources(bracket, seriousGroupId).collectAsState(initial = emptyList())
     } else {
-        viewModel.activeSources(bracket).collectAsState(initial = emptyList())
+        viewModel.activeSources(bracket, seriousGroupId).collectAsState(initial = emptyList())
     }
+    val seriousGroups by viewModel.seriousGroups().collectAsState(initial = emptyList())
     val prioritizedSources = sources.filter { it.priorityRank != null }
     val regularSources = sources.filter { it.priorityRank == null }
     val showPriorityDivider = !showCompleted &&
@@ -75,6 +78,7 @@ fun SourceListScreen(
                 SourceItem(
                     source = source,
                     showCompleted = showCompleted,
+                    seriousGroups = seriousGroups,
                     onMove = viewModel::moveSource,
                     onDone = viewModel::markDone,
                     onRestore = viewModel::restore,
@@ -93,6 +97,7 @@ fun SourceListScreen(
                     SourceItem(
                         source = source,
                         showCompleted = showCompleted,
+                        seriousGroups = seriousGroups,
                         onMove = viewModel::moveSource,
                         onDone = viewModel::markDone,
                         onRestore = viewModel::restore,
@@ -138,7 +143,8 @@ private fun PriorityDivider() {
 private fun SourceItem(
     source: SourceEntity,
     showCompleted: Boolean,
-    onMove: (SourceEntity, BracketType) -> Unit,
+    seriousGroups: List<SeriousGroupEntity>,
+    onMove: (SourceEntity, BracketType, Long?) -> Unit,
     onDone: (SourceEntity) -> Unit,
     onRestore: (SourceEntity) -> Unit,
     onDelete: (SourceEntity) -> Unit,
@@ -148,10 +154,17 @@ private fun SourceItem(
     val context = LocalContext.current
     var actionsExpanded by rememberSaveable(source.sourceId) { mutableStateOf(false) }
     var confirmDelete by rememberSaveable(source.sourceId) { mutableStateOf(false) }
+    var showSeriousGroupPicker by rememberSaveable(source.sourceId) { mutableStateOf(false) }
     val displayTitle = source.title?.takeIf { it.isNotBlank() } ?: source.url
     val canMove = !source.isDone
     val canPrioritize = !showCompleted && !source.isDone && source.bracket != BracketType.UNCLASSIFIED
-    val moveTargets = BracketType.entries.filter { it != source.bracket }
+    val currentSeriousGroupId = source.seriousGroupId ?: SeriousGroupEntity.UNGROUPED_GROUP_ID
+    val seriousGroupTargets = if (source.bracket == BracketType.SERIOUS) {
+        seriousGroups.filter { it.groupId != currentSeriousGroupId }
+    } else {
+        seriousGroups
+    }
+    val canMoveToSerious = seriousGroupTargets.isNotEmpty()
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -204,7 +217,7 @@ private fun SourceItem(
 
             if (actionsExpanded) {
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    if (canMove && moveTargets.isNotEmpty()) {
+                    if (canMove) {
                         FlowRow(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalArrangement = Arrangement.spacedBy(6.dp),
@@ -215,13 +228,39 @@ private fun SourceItem(
                                 style = MaterialTheme.typography.labelMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-                            moveTargets.forEach { bracket ->
+                            if (source.bracket != BracketType.UNCLASSIFIED) {
                                 AssistChip(
                                     onClick = {
                                         actionsExpanded = false
-                                        onMove(source, bracket)
+                                        onMove(source, BracketType.UNCLASSIFIED, null)
                                     },
-                                    label = { Text(bracket.label) }
+                                    label = { Text(BracketType.UNCLASSIFIED.label) }
+                                )
+                            }
+                            if (source.bracket != BracketType.CASUAL) {
+                                AssistChip(
+                                    onClick = {
+                                        actionsExpanded = false
+                                        onMove(source, BracketType.CASUAL, null)
+                                    },
+                                    label = { Text(BracketType.CASUAL.label) }
+                                )
+                            }
+                            if (canMoveToSerious) {
+                                AssistChip(
+                                    onClick = {
+                                        actionsExpanded = false
+                                        showSeriousGroupPicker = true
+                                    },
+                                    label = {
+                                        Text(
+                                            if (source.bracket == BracketType.SERIOUS) {
+                                                "Change group"
+                                            } else {
+                                                BracketType.SERIOUS.label
+                                            }
+                                        )
+                                    }
                                 )
                             }
                         }
@@ -327,6 +366,22 @@ private fun SourceItem(
         }
     }
 
+    if (showSeriousGroupPicker) {
+        SeriousGroupPickerDialog(
+            groups = seriousGroupTargets,
+            title = if (source.bracket == BracketType.SERIOUS) {
+                "Move to group"
+            } else {
+                "Move to Serious"
+            },
+            onDismiss = { showSeriousGroupPicker = false },
+            onSelect = { groupId ->
+                showSeriousGroupPicker = false
+                onMove(source, BracketType.SERIOUS, groupId)
+            }
+        )
+    }
+
     if (confirmDelete) {
         AlertDialog(
             onDismissRequest = { confirmDelete = false },
@@ -349,4 +404,36 @@ private fun SourceItem(
             }
         )
     }
+}
+
+@Composable
+private fun SeriousGroupPickerDialog(
+    groups: List<SeriousGroupEntity>,
+    title: String,
+    onDismiss: () -> Unit,
+    onSelect: (Long) -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                groups.forEach { group ->
+                    AssistChip(
+                        onClick = { onSelect(group.groupId) },
+                        label = { Text(group.name) }
+                    )
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }

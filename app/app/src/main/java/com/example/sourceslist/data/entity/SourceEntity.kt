@@ -7,7 +7,8 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = "sources",
     indices = [
-        Index(value = ["bracket", "priorityRank"], unique = true)
+        Index(value = ["bracket", "isDone"]),
+        Index(value = ["seriousGroupId"])
     ]
 )
 data class SourceEntity(
@@ -16,6 +17,7 @@ data class SourceEntity(
     val url: String,
     val title: String?,
     val bracket: BracketType = BracketType.UNCLASSIFIED,
+    val seriousGroupId: Long? = null,
     val priorityRank: Int? = null,
     val isDone: Boolean = false,
     val createdAt: Long = System.currentTimeMillis(),

@@ -32,6 +32,33 @@ interface SourceDao {
     )
     fun completedSourcesByBracket(bracket: BracketType): Flow<List<SourceEntity>>
 
+    @Query(
+        """
+        SELECT * FROM sources
+        WHERE bracket = :bracket AND isDone = 0 AND COALESCE(seriousGroupId, 1) = :seriousGroupId
+        ORDER BY
+            CASE WHEN priorityRank IS NULL THEN 1 ELSE 0 END ASC,
+            priorityRank ASC,
+            createdAt ASC
+        """
+    )
+    fun activeSourcesBySeriousGroup(
+        bracket: BracketType,
+        seriousGroupId: Long
+    ): Flow<List<SourceEntity>>
+
+    @Query(
+        """
+        SELECT * FROM sources
+        WHERE bracket = :bracket AND isDone = 1 AND COALESCE(seriousGroupId, 1) = :seriousGroupId
+        ORDER BY createdAt ASC
+        """
+    )
+    fun completedSourcesBySeriousGroup(
+        bracket: BracketType,
+        seriousGroupId: Long
+    ): Flow<List<SourceEntity>>
+
     @Query("SELECT COUNT(*) FROM sources WHERE url = :url")
     suspend fun duplicateCount(url: String): Int
 
@@ -41,21 +68,37 @@ interface SourceDao {
     @Query(
         """
         SELECT * FROM sources
-        WHERE bracket = :bracket AND isDone = 0 AND priorityRank IS NOT NULL
+        WHERE bracket = :bracket
+            AND isDone = 0
+            AND priorityRank IS NOT NULL
+            AND (
+                (:seriousGroupId IS NULL AND seriousGroupId IS NULL)
+                OR COALESCE(seriousGroupId, 1) = :seriousGroupId
+            )
         ORDER BY priorityRank ASC
         """
     )
-    suspend fun prioritizedSourcesByBracket(bracket: BracketType): List<SourceEntity>
+    suspend fun prioritizedSourcesByScope(
+        bracket: BracketType,
+        seriousGroupId: Long?
+    ): List<SourceEntity>
 
     @Query(
         """
         SELECT * FROM sources
-        WHERE bracket = :bracket AND isDone = 0 AND priorityRank = :priorityRank
+        WHERE bracket = :bracket
+            AND isDone = 0
+            AND priorityRank = :priorityRank
+            AND (
+                (:seriousGroupId IS NULL AND seriousGroupId IS NULL)
+                OR COALESCE(seriousGroupId, 1) = :seriousGroupId
+            )
         LIMIT 1
         """
     )
-    suspend fun getSourceByBracketAndPriority(
+    suspend fun getSourceByScopeAndPriority(
         bracket: BracketType,
+        seriousGroupId: Long?,
         priorityRank: Int
     ): SourceEntity?
 
@@ -63,12 +106,36 @@ interface SourceDao {
         """
         UPDATE sources
         SET priorityRank = priorityRank - 1, updatedAt = :updatedAt
-        WHERE bracket = :bracket AND isDone = 0 AND priorityRank > :removedRank
+        WHERE bracket = :bracket
+            AND isDone = 0
+            AND priorityRank > :removedRank
+            AND (
+                (:seriousGroupId IS NULL AND seriousGroupId IS NULL)
+                OR COALESCE(seriousGroupId, 1) = :seriousGroupId
+            )
         """
     )
     suspend fun compactPriorities(
         bracket: BracketType,
+        seriousGroupId: Long?,
         removedRank: Int,
+        updatedAt: Long
+    )
+
+    @Query(
+        """
+        UPDATE sources
+        SET bracket = :bracket,
+            seriousGroupId = NULL,
+            priorityRank = NULL,
+            isDone = 0,
+            updatedAt = :updatedAt
+        WHERE bracket = 'SERIOUS' AND seriousGroupId = :groupId
+        """
+    )
+    suspend fun moveSeriousGroupSourcesToBracket(
+        groupId: Long,
+        bracket: BracketType,
         updatedAt: Long
     )
 

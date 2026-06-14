@@ -29,8 +29,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -40,6 +40,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.sourceslist.data.entity.BracketType
+import com.example.sourceslist.data.entity.SeriousGroupEntity
 
 private data class HomeBracketSelector(
     val bracket: BracketType
@@ -48,21 +49,18 @@ private data class HomeBracketSelector(
 private object SourcesRoute {
     const val HOME = "home"
     const val ADD = "add"
+    const val SERIOUS_GROUPS = "serious-groups"
+    const val SERIOUS_GROUP = "seriousGroup/{groupId}"
     const val BRACKET = "bracket/{bracket}"
 
     fun bracket(bracket: BracketType): String = "bracket/${bracket.name}"
+    fun seriousGroup(groupId: Long): String = "seriousGroup/$groupId"
 }
 
 private val homeSelectors = listOf(
-    HomeBracketSelector(
-        bracket = BracketType.UNCLASSIFIED
-    ),
-    HomeBracketSelector(
-        bracket = BracketType.CASUAL
-    ),
-    HomeBracketSelector(
-        bracket = BracketType.SERIOUS
-    )
+    HomeBracketSelector(bracket = BracketType.UNCLASSIFIED),
+    HomeBracketSelector(bracket = BracketType.CASUAL),
+    HomeBracketSelector(bracket = BracketType.SERIOUS)
 )
 
 private val noEnterTransition: EnterTransition = EnterTransition.None
@@ -88,7 +86,11 @@ fun SourcesApp(viewModel: SourceViewModel) {
             HomeScreen(
                 onAddSource = { navController.navigate(SourcesRoute.ADD) },
                 onOpenBracket = { bracket ->
-                    navController.navigate(SourcesRoute.bracket(bracket))
+                    if (bracket == BracketType.SERIOUS) {
+                        navController.navigate(SourcesRoute.SERIOUS_GROUPS)
+                    } else {
+                        navController.navigate(SourcesRoute.bracket(bracket))
+                    }
                 }
             )
         }
@@ -123,6 +125,38 @@ fun SourcesApp(viewModel: SourceViewModel) {
             )
         }
         composable(
+            route = SourcesRoute.SERIOUS_GROUPS,
+            enterTransition = { noEnterTransition },
+            exitTransition = { noExitTransition },
+            popEnterTransition = { noEnterTransition },
+            popExitTransition = { noExitTransition }
+        ) {
+            SeriousGroupsScreen(
+                viewModel = viewModel,
+                onBack = { navController.popBackStack() },
+                onOpenGroup = { groupId ->
+                    navController.navigate(SourcesRoute.seriousGroup(groupId))
+                }
+            )
+        }
+        composable(
+            route = SourcesRoute.SERIOUS_GROUP,
+            arguments = listOf(navArgument("groupId") { type = NavType.LongType }),
+            enterTransition = { noEnterTransition },
+            exitTransition = { noExitTransition },
+            popEnterTransition = { noEnterTransition },
+            popExitTransition = { noExitTransition }
+        ) { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getLong("groupId")
+                ?: SeriousGroupEntity.UNGROUPED_GROUP_ID
+
+            SeriousGroupDetailScreen(
+                viewModel = viewModel,
+                groupId = groupId,
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable(
             route = SourcesRoute.BRACKET,
             arguments = listOf(navArgument("bracket") { type = NavType.StringType }),
             enterTransition = { noEnterTransition },
@@ -141,7 +175,6 @@ fun SourcesApp(viewModel: SourceViewModel) {
             )
         }
     }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -274,6 +307,67 @@ private fun BracketScreen(
                     viewModel = viewModel,
                     bracket = bracket,
                     showCompleted = showCompleted
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SeriousGroupDetailScreen(
+    viewModel: SourceViewModel,
+    groupId: Long,
+    onBack: () -> Unit
+) {
+    val group by viewModel.seriousGroup(groupId).collectAsState(initial = null)
+    var showCompleted by rememberSaveable(groupId) { mutableStateOf(false) }
+
+    Scaffold(
+        contentWindowInsets = WindowInsets(0.dp),
+        topBar = {
+            TopAppBar(
+                title = { Text(group?.name ?: "Serious") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Go back"
+                        )
+                    }
+                }
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                FilterChip(
+                    selected = !showCompleted,
+                    onClick = { showCompleted = false },
+                    label = { Text("Active") }
+                )
+                FilterChip(
+                    selected = showCompleted,
+                    onClick = { showCompleted = true },
+                    label = { Text("Completed") }
+                )
+            }
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                SourceListScreen(
+                    viewModel = viewModel,
+                    bracket = BracketType.SERIOUS,
+                    showCompleted = showCompleted,
+                    seriousGroupId = groupId
                 )
             }
         }
