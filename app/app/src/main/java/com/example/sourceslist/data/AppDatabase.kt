@@ -62,6 +62,18 @@ abstract class AppDatabase : RoomDatabase() {
                     "ALTER TABLE sources ADD COLUMN seriousGroupId INTEGER"
                 )
                 db.execSQL("DROP INDEX IF EXISTS `index_sources_bracket_priorityRank`")
+                db.execSQL(
+                    """
+                    CREATE INDEX IF NOT EXISTS `index_sources_bracket_isDone`
+                    ON `sources` (`bracket`, `isDone`)
+                    """.trimIndent()
+                )
+                db.execSQL(
+                    """
+                    CREATE INDEX IF NOT EXISTS `index_sources_seriousGroupId`
+                    ON `sources` (`seriousGroupId`)
+                    """.trimIndent()
+                )
 
                 val now = System.currentTimeMillis()
                 db.execSQL(

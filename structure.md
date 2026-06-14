@@ -23,4 +23,5 @@ UI:
 
 Other:
 - `app/app/schemas/` stores Room schema output for Room migrations
+- Room migrations preserve existing links and assign legacy `Serious` links to `Ungrouped`
 - `app/app/build/` is generated output
